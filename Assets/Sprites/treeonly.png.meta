@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 53c1835403e799c498ebd4279b372fdc
+guid: 19dbb0a0ca5dc4c47a4a2859e6a827af
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3408695615720582329
-    second: treeprogress 1_0
+      213: -6602744108984154669
+    second: treeonly_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: treeprogress 1_0
+      name: treeonly_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7431b85c561e1b0d0800000000000000
-      internalID: -3408695615720582329
+      spriteID: 3d5423937375e54a0800000000000000
+      internalID: -6602744108984154669
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      treeprogress 1_0: -3408695615720582329
+      treeonly_0: -6602744108984154669
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
