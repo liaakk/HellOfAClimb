@@ -52784,7 +52784,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!4 &1497726013
 Transform:
   m_ObjectHideFlags: 0
@@ -52850,7 +52850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76f9b2df57c5e1e4381fa0609926f829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  speed: 0
+  speed: 10
   moveAction:
     m_Name: Move
     m_Type: 0
@@ -52858,7 +52858,31 @@ MonoBehaviour:
     m_Id: 7adf57f4-4594-4bf0-a0a7-ede733683f84
     m_Processors: 
     m_Interactions: 
-    m_SingletonActionBindings: []
+    m_SingletonActionBindings:
+    - m_Name: 1D Axis
+      m_Id: d74d36e1-861e-4cd7-92c3-1ee724456ce2
+      m_Path: 1DAxis
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 4
+    - m_Name: negative
+      m_Id: 375144fa-ea48-4ca1-be5e-3045b8be0f0e
+      m_Path: <Keyboard>/a
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 8
+    - m_Name: positive
+      m_Id: 94866b78-2430-4fa9-820a-6e8650c2fc6c
+      m_Path: <Keyboard>/d
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Move
+      m_Flags: 8
     m_Flags: 0
   jumpAction:
     m_Name: Jump
@@ -52867,7 +52891,15 @@ MonoBehaviour:
     m_Id: 680bbda8-e982-44a0-ab26-8ec4bcf49688
     m_Processors: 
     m_Interactions: 
-    m_SingletonActionBindings: []
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 394e4d16-5a11-48b5-8e3e-1659637d1e76
+      m_Path: <Keyboard>/minus
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Jump
+      m_Flags: 0
     m_Flags: 0
 --- !u!1 &1512098587
 GameObject:
