@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public GameObject SpritePlayer;
+    
     [SerializeField] private float speed;
     [SerializeField] private float maxJumpHold = 1f;
     [SerializeField] private float jumpSpeed;
@@ -42,17 +44,36 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        //FALTA ADICIONAR AS ANIMAÇÕES DE PUXAR PARA OS LADOS DEPOIS DE SALTAR
+        //DEI ADD NISTO PQ N SABIA COMO POR AS ANIMAÇÕES DE ANDAR DE OUTRA FORMA
+        if (Keyboard.current.aKey.wasPressedThisFrame)
+        { 
+            SpritePlayer.GetComponent<Animator>().Play("left"); 
+        }
+        else if (Keyboard.current.dKey.wasPressedThisFrame)
+        { 
+            SpritePlayer.GetComponent<Animator>().Play("right"); 
+        }
+
+        //animação de estar parado
+        if (Keyboard.current.anyKey.isPressed == false) 
+        { 
+            SpritePlayer.GetComponent<Animator>().Play("stand"); 
+        }
+
         float horizontalInput = moveAction.ReadValue<float>();
 
         //isso é pra evitar que o personagem deslize qnd vai pro canto da plataforma
         if (IsGrounded() && Mathf.Abs(moveAction.ReadValue<float>()) < 0.1f)
-{
-    body.linearVelocity = new Vector2(0, body.linearVelocity.y);
-}
+        {
+            body.linearVelocity = new Vector2(0, body.linearVelocity.y);
+        }
 
         // BLOQUEIO enquanto carrega salto
         if (jumpAction.IsPressed())
         {
+            //animação de carregar salto
+            SpritePlayer.GetComponent<Animator>().Play("hold");
             horizontalInput = 0;
         }
 
@@ -95,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
         // SOLTAR SALTO
         if (jumpAction.WasReleasedThisFrame() && isJumping)
         {
+            SpritePlayer.GetComponent<Animator>().Play("jump"); 
             PerformJump();
         }
 
