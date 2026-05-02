@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public GameObject SpritePlayer;
+    public Animator SpritePlayer;
     
     [SerializeField] private float speed;
     [SerializeField] private float maxJumpHold = 1f;
