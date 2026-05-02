@@ -43,25 +43,26 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Update()
-    {
-        //FALTA ADICIONAR AS ANIMAÇÕES DE PUXAR PARA OS LADOS DEPOIS DE SALTAR
-        //DEI ADD NISTO PQ N SABIA COMO POR AS ANIMAÇÕES DE ANDAR DE OUTRA FORMA
-        if (Keyboard.current.aKey.wasPressedThisFrame)
-        { 
-            SpritePlayer.GetComponent<Animator>().Play("left"); 
-        }
-        else if (Keyboard.current.dKey.wasPressedThisFrame)
-        { 
-            SpritePlayer.GetComponent<Animator>().Play("right"); 
-        }
-
-        //animação de estar parado
-        if (Keyboard.current.anyKey.isPressed == false) 
-        { 
-            SpritePlayer.GetComponent<Animator>().Play("stand"); 
-        }
-
+    {   
         float horizontalInput = moveAction.ReadValue<float>();
+
+        // ANIMAÇÕES
+        if (Keyboard.current.aKey.isPressed)
+        { 
+            SpritePlayer.Play("left"); 
+        }
+        else if (Keyboard.current.dKey.isPressed)
+        { 
+            SpritePlayer.Play("right"); 
+        }
+        else if (Keyboard.current.spaceKey.isPressed)
+        {
+            SpritePlayer.Play("hold");
+        }
+        else
+        {
+            SpritePlayer.Play("idle"); 
+        }
 
         //isso é pra evitar que o personagem deslize qnd vai pro canto da plataforma
         if (IsGrounded() && Mathf.Abs(moveAction.ReadValue<float>()) < 0.1f)
@@ -72,8 +73,6 @@ public class PlayerMovement : MonoBehaviour
         // BLOQUEIO enquanto carrega salto
         if (jumpAction.IsPressed())
         {
-            //animação de carregar salto
-            SpritePlayer.GetComponent<Animator>().Play("hold");
             horizontalInput = 0;
         }
 
@@ -116,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
         // SOLTAR SALTO
         if (jumpAction.WasReleasedThisFrame() && isJumping)
         {
-            SpritePlayer.GetComponent<Animator>().Play("jump"); 
+            SpritePlayer.Play("jump");
             PerformJump();
         }
 
