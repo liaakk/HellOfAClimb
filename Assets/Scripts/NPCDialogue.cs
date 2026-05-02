@@ -1,59 +1,61 @@
 using System.Collections; //necessário para typing effect
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 
 public class NPCDialogue : MonoBehaviour
 {
     //SOBRE O NPC
     public string npcName; //identificar o NPC
-    public string[] lines; // lista de falas do NPC
-    private int index = 0; // fala que está a ser mostrada atualmente
-    
-    //SOBRE A VISUALIZAÇÃO DO TEXTO
-    public GameObject speechBubble; // o canvas
-    public TMP_Text speechText; // o texto dentro do canvas
-    public float typingSpeed = 0.05f; // velocidade do efeito typing
+    public string[] lines; //falas do NPC
+    private int index = 0; //controlo da fala atual
+
+    //SOBRE O TEXTO
+    public GameObject speechBubble;
+    public TMP_Text speechText;
+    public float typingSpeed = 0.05f; //velocidade do efeito typing
+
     //EFEITO TYPING
-    private bool isTyping = false; // verificar se está a aparecer uma fala atualmente:
-    private Coroutine typingCoroutine; // guarda o efeito typing (para poder parar se necessário):
-    //"coroutine" é uma animação ao longo do tempo
+    private bool isTyping = false; //verificar se está a aparecer alguma fala no momento
+    private Coroutine typingCoroutine; //guarda o efeito typing
+    //coroutine é uma animação ao longo do tempo
 
-    //SOBRE AS INSTRUÇÕES DA TECLA E
-    private bool dialogueActive = false; // para aparecerem as instruções de clicar na tecla E:
+    //ESTADO DO DIÁLOGO
+    private bool dialogueActive = false;
+    private bool hasStartedDialogue = false;
+
+    //HINT (INSTRUÇÕES DA TECLA E)
     public GameObject hintText;
-    private bool hintShown = false; 
+    private bool hintShown = false;
+    private float hintTimer = 0f;
+    public float hintHideDelay = 20f;
 
-    //SOBRE A VISIBILIDADE DO NPC NA CAMARA
-    public SpriteRenderer npcRenderer;
-    private bool isVisible;
-
-
+    //DISTÂNCIA DO PLAYER AO NPC
+    public Transform player;
+    public float interactionDistance = 2.5f;
 
     void Start()
     {
         speechBubble.SetActive(false);
-        //garante que o alerta começa escondido
         hintText.SetActive(false);
-        //para o texto começar escondido
+        //o texto começa invisível
+
         SetupDialogueByName();
-        if (npcRenderer == null)
-        {
-            npcRenderer = GetComponentInChildren<SpriteRenderer>();
-        }
-        // garantir renderer automático / autodeteção do NPC
     }
 
     void Update()
     {
-        // verificar se NPC está visível na câmara
-        isVisible = IsInCameraView();
-        //se não estiver visível, não faz nada
-        if (!isVisible){
-            return;
+        bool isNear = IsPlayerNear();
+
+        // começa automaticamente quando o player está perto
+        if (isNear && !hasStartedDialogue)
+        {
+            StartDialogue();
+            hasStartedDialogue = true;
         }
-            
-        // tecla E para avançar
-        if (dialogueActive && Input.GetKeyDown(KeyCode.E))
+
+        // tecla E (para avançar no diálogo)
+        if (dialogueActive && Keyboard.current.eKey.wasPressedThisFrame)
         {
             if (isTyping)
             {
@@ -67,13 +69,32 @@ public class NPCDialogue : MonoBehaviour
                 NextLine();
             }
         }
+
+        // hint só aparece quando está perto e em diálogo
+        if (dialogueActive && isNear)
+        {
+            hintText.SetActive(true);
+            hintTimer = 0f; // reset do timer enquanto o player está perto
+        }
+        else
+        {
+            hintTimer += Time.deltaTime;
+
+            if (hintTimer >= hintHideDelay)
+            {
+                hintText.SetActive(false);
+            }
+        }
     }
 
-    public void StartDialogue() //inicia o diálogo
+    public void StartDialogue() //INICIA DIÁLOGO
     {
+        if (dialogueActive) return;
+
         speechBubble.SetActive(true);
         dialogueActive = true;
         index = 0;
+
         ShowLine();
     }
 
@@ -83,7 +104,7 @@ public class NPCDialogue : MonoBehaviour
 
         if (index >= lines.Length)
         {
-            index = 0; // LOOP no fim
+            index = 0; // LOOP
         }
 
         ShowLine();
@@ -91,6 +112,13 @@ public class NPCDialogue : MonoBehaviour
 
     void ShowLine()
     {
+        // proteção contra erro
+        if (lines == null || lines.Length == 0)
+        {
+            Debug.LogWarning("NPC sem falas!");
+            return;
+        }
+
         if (typingCoroutine != null)
         {
             StopCoroutine(typingCoroutine);
@@ -98,31 +126,30 @@ public class NPCDialogue : MonoBehaviour
 
         //efeito de mostrar a fala letra a letra
         typingCoroutine = StartCoroutine(TypeLine(lines[index]));
-
-        //alerta da tecla E só no 1o diálogo
-         if (npcName == "Sadim" && index == 0 && !hintShown && dialogueActive)
+        
+        // hint só no 1º dialogo
+        if (npcName == "Sadim" && index == 0 && !hintShown)
         {
-            hintShown = true; // impede repetir
+            hintShown = true;
             StartCoroutine(ShowHintOnce());
         }
     }
 
-
     IEnumerator TypeLine(string line)
     {
         isTyping = true;
-        speechText.text = ""; //começa vazio
+        speechText.text = "";
 
         foreach (char letter in line)
         {
             speechText.text += letter; //adiciona uma letra de cada vez
-            yield return new WaitForSeconds(typingSpeed); //tempo até adicionar a próxima letra
+            yield return new WaitForSeconds(typingSpeed); //tempo para a próxima letra aparecer
         }
 
         isTyping = false;
     }
 
-    //só para o alerta da tecla E
+    //HINT
     IEnumerator ShowHintOnce()
     {
         hintText.SetActive(true);
@@ -130,7 +157,7 @@ public class NPCDialogue : MonoBehaviour
         hintText.SetActive(false);
     }
 
-    void SetupDialogueByName() //configuração de falas para diferentes NPCs
+    void SetupDialogueByName() //falas para diferentes NPCs
     {
         if (npcName == "Sadim")
         {
@@ -148,18 +175,11 @@ public class NPCDialogue : MonoBehaviour
                 "I cannot see, as Greed has blinded me"
             };
         }
-        else if (npcName == "")
-        {
-            lines = new string[]
-            {
-            };
-        }
     }
 
-    // DETEÇÃO DE CÂMARA
-    bool IsInCameraView()
+    //DISTÂNCIA DO NPC AO PLAYER
+    bool IsPlayerNear()
     {
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
-        return GeometryUtility.TestPlanesAABB(planes, npcRenderer.bounds);
+        return Vector2.Distance(transform.position, player.position) <= interactionDistance;
     }
 }
