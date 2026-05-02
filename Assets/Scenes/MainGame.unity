@@ -96595,12 +96595,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76f9b2df57c5e1e4381fa0609926f829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  SpritePlayer: {fileID: 0}
-  speed: 0
+  SpritePlayer: {fileID: 1944582387}
+  moveSpeed: 5
+  jumpForce: 8
   maxJumpHold: 1
-  jumpSpeed: 0
-  airControlDelay: 0.2
-  airControlStrength: 4
+  dashSpeed: 12
+  dashTime: 0.2
+  fallMultiplier: 2
+  lowJumpMultiplier: 2
   moveAction:
     m_Name: Move
     m_Type: 0

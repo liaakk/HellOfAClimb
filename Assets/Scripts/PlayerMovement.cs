@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // 📺 Referência para as animações
+    
     public Animator SpritePlayer;
 
     [Header("Movimento")]
