@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 5f; // velocidade do player no chão
 
     [Header("Salto")]
-    [SerializeField] private float jumpForce = 12f; // força do salto (quao alto ele pula)
+    [SerializeField] private float jumpForce = 20f; // força do salto (quao alto ele pula)
     [SerializeField] private float maxJumpHold = 1f; // quanto tempo pode carregar o salto
 
     [Header("Dash (Boost Lateral)")]
