@@ -3,7 +3,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    
     public Animator SpritePlayer;
 
     [Header("Movimento")]
@@ -25,6 +24,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private InputAction moveAction; // A/D
     [SerializeField] private InputAction jumpAction; // ESPAÇO
 
+    [Header("Animações")]
+    [SerializeField] private string idleAnimation = "idle";
+    [SerializeField] private string leftAnimation = "left";
+    [SerializeField] private string rightAnimation = "right";
+    [SerializeField] private string holdAnimation = "hold";
+    [SerializeField] private string jumpAnimation = "jump";
+    [SerializeField] private float moveDeadZone = 0.1f;
+
     private Rigidbody2D body;
 
     // Variáveis de controlo de salto
@@ -36,6 +43,10 @@ public class PlayerMovement : MonoBehaviour
     private float dashTimer; // conta quanto tempo falta pro dash acabar
     private float dashDirection; // para que lado vai (-1 esquerda, 1 direita)
     private bool hasUsedDashThisJump; // já fez dash neste salto? (impede mudar de direção)
+
+    // Cache do estado para evitar reiniciar a mesma animação a cada frame.
+    private AnimationState currentAnimationState;
+    private bool hasAnimationState;
 
     private void Awake()
     {
@@ -65,19 +76,7 @@ public class PlayerMovement : MonoBehaviour
         // ==============================================================
         // ANIMAÇÕES - qual animação tocar
         // ==============================================================
-        if (!IsGrounded()) // se está no ar
-        {
-            SpritePlayer.Play("jump"); 
-        }
-        else // se está no chão
-        {
-            if (horizontalInput < -0.1f) // vai para esquerda?
-                SpritePlayer.Play("left");
-            else if (horizontalInput > 0.1f) // vai para direita?
-                SpritePlayer.Play("right");
-            else // parado
-                SpritePlayer.Play("idle");
-        }
+        UpdateAnimation(horizontalInput);
 
         // ==============================================================
         //  MOVIMENTO NO CHÃO
@@ -174,6 +173,70 @@ public class PlayerMovement : MonoBehaviour
         dashTimer = dashTime; // reseta o timer
         dashDirection = Mathf.Sign(dir); 
         hasUsedDashThisJump = true; // marca como usado (impede mudar de direção)
+    }
+
+    // ==============================================================
+    // ANIMAÇÕES
+    // ==============================================================
+  
+    private enum AnimationState
+    {
+        Idle,
+        Left,
+        Right,
+        Hold,
+        Jump
+    }
+
+    private void UpdateAnimation(float horizontalInput)
+    {
+        AnimationState nextState = GetAnimationState(horizontalInput);
+        PlayAnimation(nextState);
+    }
+
+    private AnimationState GetAnimationState(float horizontalInput)
+    {
+        // Prioridade visual:
+        // 1) Hold enquanto carrega salto no chão.
+        // 2) Jump quando está no ar.
+        // 3) Movimento lateral no chão.
+        // 4) Idle no chão sem input.
+        if (isJumping && IsGrounded())
+            return AnimationState.Hold;
+
+        if (!IsGrounded())
+            return AnimationState.Jump;
+
+        if (horizontalInput < -moveDeadZone)
+            return AnimationState.Left;
+
+        if (horizontalInput > moveDeadZone)
+            return AnimationState.Right;
+
+        return AnimationState.Idle;
+    }
+
+    private void PlayAnimation(AnimationState state)
+    {
+        if (SpritePlayer == null)
+            return;
+
+        if (hasAnimationState && state == currentAnimationState)
+            return;
+
+        currentAnimationState = state;
+        hasAnimationState = true;
+
+        string animationName = state switch
+        {
+            AnimationState.Left => leftAnimation,
+            AnimationState.Right => rightAnimation,
+            AnimationState.Hold => holdAnimation,
+            AnimationState.Jump => jumpAnimation,
+            _ => idleAnimation
+        };
+
+        SpritePlayer.Play(animationName);
     }
 
     // Executa o salto (com base na carga)

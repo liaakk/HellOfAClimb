@@ -96599,7 +96599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   SpritePlayer: {fileID: 1944582387}
   moveSpeed: 5
-  jumpForce: 12
+  jumpForce: 20
   maxJumpHold: 2.54
   dashSpeed: 12
   dashTime: 0.2
@@ -96655,6 +96655,12 @@ MonoBehaviour:
       m_Action: Jump
       m_Flags: 0
     m_Flags: 0
+  idleAnimation: idle
+  leftAnimation: left
+  rightAnimation: right
+  holdAnimation: hold
+  jumpAnimation: jump
+  moveDeadZone: 0.1
 --- !u!61 &1497726016
 BoxCollider2D:
   m_ObjectHideFlags: 0
