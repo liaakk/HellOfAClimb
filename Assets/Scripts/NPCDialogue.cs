@@ -27,8 +27,6 @@ public class NPCDialogue : MonoBehaviour
     //HINT (TECLA E)
     public GameObject hintText;
     private bool hintShown = false;
-    private float hintTimer = 0f;
-    public float hintHideDelay = 20f;
 
     //DISTÂNCIA DO PLAYER AO NPC
     public Transform player;
@@ -38,7 +36,7 @@ public class NPCDialogue : MonoBehaviour
     {
         speechBubble.SetActive(false);
         hintText.SetActive(false);
-        //o texto começa invisível
+        //o botão começa invisível
 
         SetupDialogueByName();
     }
@@ -74,16 +72,10 @@ public class NPCDialogue : MonoBehaviour
         if (dialogueActive && isNear)
         {
             hintText.SetActive(true);
-            hintTimer = 0f; // reset do timer enquanto o player está perto
         }
         else
         {
-            hintTimer += Time.deltaTime;
-
-            if (hintTimer >= hintHideDelay)
-            {
-                hintText.SetActive(false);
-            }
+            hintText.SetActive(false);
         }
     }
 
@@ -131,7 +123,6 @@ public class NPCDialogue : MonoBehaviour
         if (npcName == "Sadim" && index == 0 && !hintShown)
         {
             hintShown = true;
-            StartCoroutine(ShowHintOnce());
         }
     }
 
@@ -149,13 +140,6 @@ public class NPCDialogue : MonoBehaviour
         isTyping = false;
     }
 
-    //HINT
-    IEnumerator ShowHintOnce()
-    {
-        hintText.SetActive(true);
-        yield return new WaitForSeconds(5f);
-        hintText.SetActive(false);
-    }
 
     void SetupDialogueByName() //falas para diferentes NPCs
     {

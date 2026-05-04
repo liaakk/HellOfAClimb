@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
+
 public class PlayerMovement : MonoBehaviour
 {
     public Animator SpritePlayer;
+    public GameObject mainCamera; //CONTROLO DA CAMARA
 
     [Header("Movimento")]
     [SerializeField] private float moveSpeed = 5f; // velocidade do player no chão
@@ -34,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D body;
 
+    
+
     // Variáveis de controlo de salto
     private float jumpTimer; // conta quanto tempo tá a carregar
     private bool isJumping; // está em modo salto?
@@ -50,13 +55,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        
         body = GetComponent<Rigidbody2D>();
     }
 
     private void OnEnable()
     {
-        
         moveAction.Enable();
         jumpAction.Enable();
     }
@@ -70,6 +73,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        mainCamera.transform.position = new Vector3(
+        mainCamera.transform.position.x, 
+        transform.position.y + 2f, // offset vertical para a câmera ficar acima do player
+        mainCamera.transform.position.z
+        );
+
         // le o input
         float horizontalInput = moveAction.ReadValue<float>();
 
