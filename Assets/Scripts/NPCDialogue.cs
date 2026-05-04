@@ -24,7 +24,7 @@ public class NPCDialogue : MonoBehaviour
     private bool dialogueActive = false;
     private bool hasStartedDialogue = false;
 
-    //HINT (INSTRUÇÕES DA TECLA E)
+    //HINT (TECLA E)
     public GameObject hintText;
     private bool hintShown = false;
     private float hintTimer = 0f;
