@@ -140,14 +140,9 @@ public class NovoMovimento : MonoBehaviour
         // Update animations now that we have grounded state and input
         UpdateAnimation(currentMoveInput);
 
-        if (!isGrounded)
-        {
-            print("Airborne");
-        }
         // Ground: Enable movement
         if (isGrounded)
         {
-            print("Grounded");
             if (!isChargingJump)
             {
                 ImpulseTimer = initialImpulseTimer;

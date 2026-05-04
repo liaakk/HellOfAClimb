@@ -30,7 +30,8 @@ public class NPCDialogue : MonoBehaviour
 
     //DISTÂNCIA DO PLAYER AO NPC
     public Transform player;
-    public float interactionDistance = 2.5f;
+    public float interactionDistanceX;
+    public float interactionDistanceY;
 
     void Start()
     {
@@ -164,6 +165,10 @@ public class NPCDialogue : MonoBehaviour
     //DISTÂNCIA DO NPC AO PLAYER
     bool IsPlayerNear()
     {
-        return Vector2.Distance(transform.position, player.position) <= interactionDistance;
+        if (player == null) return false;
+
+        float dx = Mathf.Abs(transform.position.x - player.position.x);
+        float dy = Mathf.Abs(transform.position.y - player.position.y);
+        return dx <= interactionDistanceX && dy <= interactionDistanceY;
     }
 }
