@@ -5,14 +5,13 @@ public class NovoMovimento : MonoBehaviour
 {
     public Animator SpritePlayer;
     public float moveSpeed;
-    public float jumpForce;
     public Transform groundCheck;
-    public float groundCheckRadius;
     public float ImpulseTimer;
     public float ImpulseForce;
     public LayerMask groundLayer;
 
     private Rigidbody2D rb;
+    private BoxCollider2D groundCheckCollider;
     private bool isGrounded;
     private bool isChargingJump = false;
     private float initialImpulseTimer;
@@ -39,6 +38,7 @@ public class NovoMovimento : MonoBehaviour
     private enum AnimationState { Idle, Left, Right, Hold, Jump }
     private AnimationState currentAnimationState;
     private bool hasAnimationState;
+    private bool holdPlayedThisCharge = false;
 
     [Header("Dash Settings")]
     public int maxAirDashes = 1; // Max dashes per jump
@@ -80,6 +80,11 @@ public class NovoMovimento : MonoBehaviour
     void Start()
     {
         rb = this.GetComponent<Rigidbody2D>();
+        groundCheckCollider = groundCheck.GetComponent<BoxCollider2D>();
+        
+        if (groundCheckCollider == null)
+            Debug.LogError("NovoMovimento: groundCheck child does not have a BoxCollider2D! Ground detection will not work.");
+        
         initialImpulseTimer = ImpulseTimer;
         
         // Register animator with TimeMaster for time scale syncing
@@ -94,8 +99,17 @@ public class NovoMovimento : MonoBehaviour
         // (Animations updated later after reading grounded state & inputs)
 
         #region Basic Movement
-        // Check if grounded
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        // Check if grounded using the BoxCollider2D from groundCheck child
+        if (groundCheckCollider != null)
+        {
+            isGrounded = groundCheckCollider.IsTouchingLayers(groundLayer);
+        }
+        else
+        {
+            isGrounded = false;
+            if (groundCheck != null)
+                Debug.LogWarning("groundCheckCollider not found! Make sure groundCheck child has a BoxCollider2D component.");
+        }
         
         // Reset dashes when grounded
         if (isGrounded && !wasGroundedLastFrame)
@@ -126,9 +140,14 @@ public class NovoMovimento : MonoBehaviour
         // Update animations now that we have grounded state and input
         UpdateAnimation(currentMoveInput);
 
+        if (!isGrounded)
+        {
+            print("Airborne");
+        }
         // Ground: Enable movement
         if (isGrounded)
         {
+            print("Grounded");
             if (!isChargingJump)
             {
                 ImpulseTimer = initialImpulseTimer;
@@ -264,6 +283,7 @@ public class NovoMovimento : MonoBehaviour
         {
             print("Jump Pressed!");
             isChargingJump = true; // start charging
+            holdPlayedThisCharge = false; // allow hold animation to play once for this charge
             dashesRemaining = maxAirDashes; // Reset dashes on jump
             airStateStartTime = Time.time; // Dash immediately available when jumping
         }
@@ -284,6 +304,8 @@ public class NovoMovimento : MonoBehaviour
         ImpulseTimer = ImpulseTimer + 1f;
         print("Jumped! Impulse: " + (ImpulseForce / ImpulseTimer));
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, ImpulseForce / ImpulseTimer); // Aplica a força do salto
+        // Reset hold-play flag so next charge can play hold animation once
+        holdPlayedThisCharge = false;
     }
 
     #region Dash / Mid-Air Boost
@@ -347,8 +369,15 @@ public class NovoMovimento : MonoBehaviour
         if (hasAnimationState && state == currentAnimationState)
             return;
 
+        // If we're in the Hold state and the hold animation was already played for this charge, skip playing it again
+        if (state == AnimationState.Hold && holdPlayedThisCharge)
+            return;
+
         currentAnimationState = state;
         hasAnimationState = true;
+
+        if (state == AnimationState.Hold)
+            holdPlayedThisCharge = true;
 
         string animationName = state switch
         {
