@@ -35,6 +35,10 @@ public class NovoMovimento : MonoBehaviour
     private int dashesRemaining = 1; // Track dashes left in current air state
     private float airStateStartTime = 0f; // When player entered air state
     private bool wasGroundedLastFrame = true; // Detect ledge fall
+    // Animation state cache
+    private enum AnimationState { Idle, Left, Right, Hold, Jump }
+    private AnimationState currentAnimationState;
+    private bool hasAnimationState;
 
     [Header("Dash Settings")]
     public int maxAirDashes = 1; // Max dashes per jump
@@ -42,6 +46,10 @@ public class NovoMovimento : MonoBehaviour
     public float dashBoostForce = 15f;
     public float dashFallSpeed = 0.5f; // slow descent while charging
     public float ledgeFallCooldown = 0.2f; // Delay before dash is usable when falling off ledge
+
+    [Header("Queda")]
+    [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
+    [SerializeField] private float lowJumpMultiplier = 2f; // se soltar salto cedo, desce mais rápido
 
     [Header("Animações")]
     [SerializeField] private string idleAnimation = "idle";
@@ -83,30 +91,7 @@ public class NovoMovimento : MonoBehaviour
 
     void Update()
     {
-        // Update animations based on input and state
-        if (isGrounded)
-        {
-            if (currentMoveInput > moveDeadZone)
-            {
-                SpritePlayer.Play(rightAnimation);
-            }
-            else if (currentMoveInput < -moveDeadZone)
-            {
-                SpritePlayer.Play(leftAnimation);
-            }
-            else
-            {
-                SpritePlayer.Play(idleAnimation);
-            }
-            if (isChargingJump && !SpritePlayer.GetCurrentAnimatorStateInfo(0).IsName("holdAnimation"))
-            {
-                SpritePlayer.Play(holdAnimation);
-            }
-        }
-        else
-        {
-            SpritePlayer.Play(jumpAnimation);
-        }
+        // (Animations updated later after reading grounded state & inputs)
 
         #region Basic Movement
         // Check if grounded
@@ -137,6 +122,9 @@ public class NovoMovimento : MonoBehaviour
         {
             currentMoveInput = moveAction.ReadValue<Vector2>().x;
         }
+
+        // Update animations now that we have grounded state and input
+        UpdateAnimation(currentMoveInput);
 
         // Ground: Enable movement
         if (isGrounded)
@@ -187,6 +175,18 @@ public class NovoMovimento : MonoBehaviour
         // Mid-air horizontal boost system
         if (!isGrounded && !isChargingJump)
         {
+            // Gravity adjustments while in air (preserve dash boost behavior)
+            if (!isDashBoostActive)
+            {
+                if (rb.linearVelocity.y < 0)
+                {
+                    rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+                }
+                else if (rb.linearVelocity.y > 0 && !isChargingJump)
+                {
+                    rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+                }
+            }
             // Start charging if holding left/right AND have dashes left AND cooldown passed
             if (currentMoveInput != 0f && !isChargingDash && dashesRemaining > 0 && Time.time > airStateStartTime + ledgeFallCooldown)
             {
@@ -311,6 +311,56 @@ public class NovoMovimento : MonoBehaviour
         }
     }
     #endregion
+
+    // Animation helpers (inspired by PlayerMovement)
+    private void UpdateAnimation(float horizontalInput)
+    {
+        if (SpritePlayer == null)
+            return;
+
+        AnimationState next = GetAnimationState(horizontalInput);
+        PlayAnimation(next);
+    }
+
+    private AnimationState GetAnimationState(float horizontalInput)
+    {
+        if (isChargingJump && isGrounded)
+            return AnimationState.Hold;
+
+        if (!isGrounded)
+            return AnimationState.Jump;
+
+        if (horizontalInput < -moveDeadZone)
+            return AnimationState.Left;
+
+        if (horizontalInput > moveDeadZone)
+            return AnimationState.Right;
+
+        return AnimationState.Idle;
+    }
+
+    private void PlayAnimation(AnimationState state)
+    {
+        if (SpritePlayer == null)
+            return;
+
+        if (hasAnimationState && state == currentAnimationState)
+            return;
+
+        currentAnimationState = state;
+        hasAnimationState = true;
+
+        string animationName = state switch
+        {
+            AnimationState.Left => leftAnimation,
+            AnimationState.Right => rightAnimation,
+            AnimationState.Hold => holdAnimation,
+            AnimationState.Jump => jumpAnimation,
+            _ => idleAnimation
+        };
+
+        SpritePlayer.Play(animationName);
+    }
 
     private void OnDisable()
     {
