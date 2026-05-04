@@ -87976,8 +87976,8 @@ MonoBehaviour:
   typingSpeed: 0.05
   hintText: {fileID: 648890984}
   player: {fileID: 984050775}
-  interactionDistanceX: 2.5
-  interactionDistanceY: 0.5
+  interactionDistanceX: 3
+  interactionDistanceY: 1
 --- !u!213 &338212651
 Sprite:
   m_ObjectHideFlags: 0
@@ -88316,6 +88316,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff75c7bfbba56e4aa89f44742eee5a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  ButtonUI: {fileID: 2030951273}
+  collectEnableDelay: 0.1
 --- !u!58 &511346340
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -88350,7 +88352,7 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.2}
+  m_Offset: {x: 0, y: -0.25}
   m_Radius: 0.8125
 --- !u!1 &583768853
 GameObject:
@@ -89208,7 +89210,7 @@ Transform:
   m_GameObject: {fileID: 648890984}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.2099999, y: 1.65, z: 0}
+  m_LocalPosition: {x: 0, y: 1.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -89283,7 +89285,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7156243124307829213, guid: 598b8e9996582fd43bec3e369aa666c8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -98827,9 +98829,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
