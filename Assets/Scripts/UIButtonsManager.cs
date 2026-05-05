@@ -5,12 +5,14 @@ public class UIButtonsManager : MonoBehaviour
 {
     public static UIButtonsManager Instance;
 
+    [Header("UI")]
     public Image uiImage;
     public Sprite[] buttonSprites;
-    public Animator uiAnimator; // optional animator for UI animations
-    [SerializeField] private string firstCollectAnimationState = "1";
 
-    int count;
+    private int count = 0;
+
+// nisso aqui você pode definir quantos botões existem no jogo, e o script vai dividir os sprites igualmente entre eles
+    private int totalButtons = 4;
 
     void Awake()
     {
@@ -18,24 +20,28 @@ public class UIButtonsManager : MonoBehaviour
     }
 
     public void AddButton()
-{
-    count++;
-
-    Debug.Log("contagem agora: " + count);
-
-    // Safely set sprite if available
-    if (buttonSprites != null && buttonSprites.Length > 0)
     {
-        int idx = Mathf.Clamp(count, 0, buttonSprites.Length - 1);
-        if (uiImage != null)
-            uiImage.sprite = buttonSprites[idx];
-        Debug.Log("o sprite eh o numero: " + idx);
-    }
+        count++;
 
-    // Play animation state "1" when the first button is collected
-    if (count == 1 && uiAnimator != null && !string.IsNullOrEmpty(firstCollectAnimationState))
-    {
-        uiAnimator.Play(firstCollectAnimationState, 0, 0f);
+        
+        count = Mathf.Clamp(count, 0, totalButtons);
+
+        Debug.Log("botões coletados: " + count);
+
+        if (buttonSprites == null || buttonSprites.Length == 0) return;
+        if (uiImage == null) return;
+
+        // quantos sprites por etapa
+        int spritesPerStep = buttonSprites.Length / totalButtons;
+
+        // calcula o índice
+        int idx = count * spritesPerStep;
+
+        // evita ultrapassar o array
+        idx = Mathf.Clamp(idx, 0, buttonSprites.Length - 1);
+
+        uiImage.sprite = buttonSprites[idx];
+
+        Debug.Log("sprite atual: " + idx);
     }
-}
 }

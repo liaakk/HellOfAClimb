@@ -88804,7 +88804,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff75c7bfbba56e4aa89f44742eee5a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  ButtonUI: {fileID: 2030951273}
 --- !u!58 &511346340
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -91154,8 +91153,6 @@ MonoBehaviour:
   - {fileID: -1985819794, guid: eebde7273f174884cb29d0594ec5354d, type: 3}
   - {fileID: -1778187810, guid: eebde7273f174884cb29d0594ec5354d, type: 3}
   - {fileID: -1083466267, guid: eebde7273f174884cb29d0594ec5354d, type: 3}
-  uiAnimator: {fileID: 0}
-  firstCollectAnimationState: 1
 --- !u!4 &1259468661
 Transform:
   m_ObjectHideFlags: 0
@@ -105047,7 +105044,6 @@ GameObject:
   - component: {fileID: 2030951276}
   - component: {fileID: 2030951275}
   - component: {fileID: 2030951274}
-  - component: {fileID: 2030951277}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -105112,28 +105108,6 @@ RectTransform:
   m_AnchoredPosition: {x: 624, y: 689}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &2030951277
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2030951273}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2ad5ea6fdd00e7b4481b1311f1e7463a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2095103180
 GameObject:
   m_ObjectHideFlags: 0

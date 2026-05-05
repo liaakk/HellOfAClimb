@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class CollectButton : MonoBehaviour
 {
-    public GameObject ButtonUI;
+    private bool collected = false;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (collected) return;
+
         if (other.CompareTag("Player"))
         {
-            Debug.Log("BOTÃO COLETADO!");
+            collected = true;
 
             UIButtonsManager.Instance.AddButton();
 
             Destroy(gameObject);
-
-            ButtonUI.GetComponent<Animator>().Play("OneButton");
         }
     }
 }
