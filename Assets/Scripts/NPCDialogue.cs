@@ -26,7 +26,7 @@ public class NPCDialogue : MonoBehaviour
 
     //HINT (TECLA E)
     public GameObject hintText;
-    private bool hintShown = false;
+    private bool hasPressedE = false;
 
     //DISTÂNCIA DO PLAYER AO NPC
     public Transform player;
@@ -56,6 +56,12 @@ public class NPCDialogue : MonoBehaviour
         // tecla E (para avançar no diálogo)
         if (dialogueActive && Keyboard.current.eKey.wasPressedThisFrame)
         {
+           if (!hasPressedE)
+            {
+                hasPressedE = true;
+                hintText.SetActive(false);
+            }
+
             if (isTyping)
             {
                 // se ainda está a escrever, mostra a frase inteira
@@ -70,14 +76,14 @@ public class NPCDialogue : MonoBehaviour
         }
 
         // hint só aparece quando está perto e em diálogo
-        if (dialogueActive && isNear)
-        {
-            hintText.SetActive(true);
-        }
+        if (dialogueActive && isNear && !hasPressedE)
+            {
+                hintText.SetActive(true);
+            }
         else
-        {
-            hintText.SetActive(false);
-        }
+            {
+                hintText.SetActive(false);
+            }
     }
 
     public void StartDialogue() //INICIA DIÁLOGO
@@ -119,12 +125,6 @@ public class NPCDialogue : MonoBehaviour
 
         //efeito de mostrar a fala letra a letra
         typingCoroutine = StartCoroutine(TypeLine(lines[index]));
-        
-        // hint só no 1º dialogo
-        if (npcName == "Sadim" && index == 0 && !hintShown)
-        {
-            hintShown = true;
-        }
     }
 
     IEnumerator TypeLine(string line)
