@@ -57,7 +57,19 @@ public class NovoMovimento : MonoBehaviour
     [SerializeField] private string rightAnimation = "right";
     [SerializeField] private string holdAnimation = "hold";
     [SerializeField] private string jumpAnimation = "jump";
+    [SerializeField] private string bigFallAnimation = "BigFall";
+    [SerializeField] private string knockedAnimation = "knocked";
+    [SerializeField] private string gettingUpAnimation = "GettingUp";
+    [Header("Big Fall")]
+    [Tooltip("Vertical velocity threshold (absolute) used to detect a big fall on landing.")]
+    public float bigFallVelocityThreshold = 10f;
     [SerializeField] private float moveDeadZone = 0.1f;
+
+    // Special animation state control
+    private bool isInSpecialAnimation = false; // when true, normal movement/animations are locked
+    private bool isInKnocked = false;
+    private bool knockedPlayedOnce = false;
+    private float prevYVelocity = 0f;
 
     private void OnEnable()
     {
@@ -92,6 +104,18 @@ public class NovoMovimento : MonoBehaviour
         {
             TImeMaster.Instance.RegisterAnimator(SpritePlayer);
         }
+
+        // At game start: play knocked animation as the initial state
+        if (SpritePlayer != null)
+        {
+            SpritePlayer.Play(knockedAnimation);
+            isInSpecialAnimation = true;
+            isInKnocked = true;
+            // mark as not yet played once; we will set it after one full cycle
+            knockedPlayedOnce = false;
+            DisableMovement();
+            StartCoroutine(MarkKnockedPlayedOnce());
+        }
     }
 
     void Update()
@@ -115,6 +139,12 @@ public class NovoMovimento : MonoBehaviour
         if (isGrounded && !wasGroundedLastFrame)
         {
             dashesRemaining = maxAirDashes;
+
+            // Detect heavy fall on landing
+            if (prevYVelocity < -bigFallVelocityThreshold)
+            {
+                TriggerBigFallSequence();
+            }
         }
         
         // Detect ledge fall (entering air without jumping)
@@ -138,7 +168,11 @@ public class NovoMovimento : MonoBehaviour
         }
 
         // Update animations now that we have grounded state and input
-        UpdateAnimation(currentMoveInput);
+        // Skip normal animation updates while a special animation (BigFall/knocked/GettingUp) is active
+        if (!isInSpecialAnimation)
+        {
+            UpdateAnimation(currentMoveInput);
+        }
 
         // Ground: Enable movement
         if (isGrounded)
@@ -170,6 +204,19 @@ public class NovoMovimento : MonoBehaviour
                 rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             }
         }
+        
+        // If the player is knocked and presses any key, transition to GettingUp
+        if (isInKnocked && knockedPlayedOnce)
+        {
+            if (IsAnyInputPressed())
+            {
+                StartGettingUpSequence();
+            }
+        }
+
+        // store vertical velocity for next-frame landing detection
+        prevYVelocity = rb != null ? rb.linearVelocity.y : 0f;
+
         #endregion
 
         #region Jump
@@ -384,6 +431,111 @@ public class NovoMovimento : MonoBehaviour
         };
 
         SpritePlayer.Play(animationName);
+    }
+
+    // Special animation sequences
+    private void TriggerBigFallSequence()
+    {
+        if (SpritePlayer == null) return;
+        if (isInSpecialAnimation) return; // already handling a special animation
+
+        isInSpecialAnimation = true;
+        DisableMovement();
+            StartCoroutine(PlayAnimationAndWait(bigFallAnimation, () =>
+            {
+                // After BigFall finishes, go to knocked state
+                SpritePlayer.Play(knockedAnimation);
+                isInKnocked = true;
+                knockedPlayedOnce = false; // will set true after one cycle
+                // keep movement disabled until GettingUp completes
+                StartCoroutine(MarkKnockedPlayedOnce());
+            }));
+    }
+
+    private void StartGettingUpSequence()
+    {
+        if (SpritePlayer == null) return;
+        if (!isInKnocked) return;
+
+        isInKnocked = false;
+        // Play GettingUp and wait to finish
+        StartCoroutine(PlayAnimationAndWait(gettingUpAnimation, () =>
+        {
+            // After getting up, return to idle and re-enable normal control
+            SpritePlayer.Play(idleAnimation);
+            isInSpecialAnimation = false;
+            EnableMovement();
+        }));
+    }
+
+    private System.Collections.IEnumerator PlayAnimationAndWait(string animName, System.Action onComplete)
+    {
+        SpritePlayer.Play(animName);
+        // wait at least one frame for animator to update
+        yield return null;
+
+        // wait until the current state's normalizedTime >= 1 (animation finished)
+        var layer = 0;
+        while (true)
+        {
+            if (SpritePlayer == null) yield break;
+            var state = SpritePlayer.GetCurrentAnimatorStateInfo(layer);
+            if (state.IsName(animName) && state.normalizedTime >= 1f)
+                break;
+            yield return null;
+        }
+
+        onComplete?.Invoke();
+    }
+
+    private System.Collections.IEnumerator MarkKnockedPlayedOnce()
+    {
+        if (SpritePlayer == null) yield break;
+        // wait one frame then wait until knocked animation has completed at least one cycle
+        yield return null;
+        var layer = 0;
+        while (true)
+        {
+            if (SpritePlayer == null) yield break;
+            var state = SpritePlayer.GetCurrentAnimatorStateInfo(layer);
+            if (state.IsName(knockedAnimation) && state.normalizedTime >= 1f)
+                break;
+            yield return null;
+        }
+        knockedPlayedOnce = true;
+    }
+
+    // Input System friendly query for "any key or button pressed this frame".
+    private bool IsAnyInputPressed()
+    {
+        // Keyboard
+        var kb = UnityEngine.InputSystem.Keyboard.current;
+        if (kb != null && kb.anyKey.wasPressedThisFrame) return true;
+
+        // Mouse buttons
+        var mouse = UnityEngine.InputSystem.Mouse.current;
+        if (mouse != null)
+        {
+            if (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame || mouse.middleButton.wasPressedThisFrame)
+                return true;
+        }
+
+        // Gamepad
+        var gp = UnityEngine.InputSystem.Gamepad.current;
+        if (gp != null)
+        {
+            foreach (var c in gp.allControls)
+            {
+                if (c is UnityEngine.InputSystem.Controls.ButtonControl b && b.wasPressedThisFrame)
+                    return true;
+            }
+        }
+
+        // Also check the Jump action (or Move action) as a fallback
+        if (jumpAction != null && jumpAction.triggered) return true;
+        if (moveAction != null && moveAction.triggered) return true;
+
+        return false;
     }
 
     private void OnDisable()
