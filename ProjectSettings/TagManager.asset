@@ -41,5 +41,26 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 4211564241
+    locked: 0
+  - name: BackBack
+    uniqueID: 261177935
+    locked: 0
+  - name: Back
+    uniqueID: 3531234033
+    locked: 0
+  - name: Middle
+    uniqueID: 3713251205
+    locked: 0
+  - name: Entity
+    uniqueID: 1660056171
+    locked: 0
+  - name: Fore
+    uniqueID: 3833762829
+    locked: 0
+  - name: Camera
+    uniqueID: 2133972527
+    locked: 0
   m_RenderingLayers:
   - Default
