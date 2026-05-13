@@ -47,6 +47,24 @@ public class NovoMovimento : MonoBehaviour
     public float dashFallSpeed = 0.5f; // slow descent while charging
     public float ledgeFallCooldown = 0.2f; // Delay before dash is usable when falling off ledge
 
+    [Header("Slope / Slide Settings")]
+    [Tooltip("Distance used to raycast downwards to detect ground normal for slope calculations.")]
+    public float slopeCheckDistance = 0.6f;
+    [Tooltip("How fast the player passively slides down slopes when not actively climbing.")]
+    public float slideSpeed = 3f;
+    [Tooltip("Minimum angle (degrees) considered a slope to start sliding.")]
+    public float slopeSlideAngleThreshold = 5f;
+    [Tooltip("Maximum slope angle for normalization (used to scale sliding).")]
+    public float maxSlopeAngle = 60f;
+    [Tooltip("How much dash boost contributes to slope-climb ability (multiplier).")]
+    public float dashClimbStrengthFactor = 1f;
+    [Tooltip("Time window after releasing a dash during which slope-climb is allowed.")]
+    public float dashClimbWindow = 0.3f;
+
+    // runtime slope/dash tracking
+    private float lastDashBoostMagnitude = 0f;
+    private float lastDashReleaseTime = -999f;
+
     [Header("Queda")]
     [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
     [SerializeField] private float lowJumpMultiplier = 2f; // se soltar salto cedo, desce mais rápido
@@ -195,13 +213,64 @@ public class NovoMovimento : MonoBehaviour
         // Apply horizontal movement when enabled (skip entirely if boost is active)
         if (!isDashBoostActive)
         {
-            if (moveAction != null && moveAction.enabled && isMovementEnabled && !isChargingDash)
+            // Detect slope under the player
+            Vector2 groundNormal = Vector2.up;
+            float slopeAngle = 0f;
+            if (isGrounded && groundCheck != null)
             {
-                rb.linearVelocity = new Vector2(currentMoveInput * moveSpeed, rb.linearVelocity.y);
+                groundNormal = GetGroundNormal();
+                slopeAngle = Vector2.Angle(groundNormal, Vector2.up);
             }
-            else if (!isChargingDash)
+
+            bool onSlope = isGrounded && slopeAngle > slopeSlideAngleThreshold;
+
+            if (onSlope)
             {
-                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                Vector2 groundTangent = new Vector2(groundNormal.y, -groundNormal.x).normalized; // along-surface direction
+
+                // Determine desired movement along the slope
+                float dot = Vector2.Dot(groundTangent, Vector2.right);
+                float signDot = Mathf.Sign(dot == 0f ? 1f : dot);
+                Vector2 desiredAlongSlope = groundTangent * currentMoveInput * moveSpeed * signDot;
+
+                // Is the player trying to go uphill?
+                bool tryingToGoUphill = Vector2.Dot(desiredAlongSlope, Vector2.up) > 0f;
+
+                // Allow climb if a recent dash provided enough boost
+                bool hasRecentDashClimb = (Time.time - lastDashReleaseTime) <= dashClimbWindow
+                                          && lastDashBoostMagnitude * dashClimbStrengthFactor >= slopeAngle;
+
+                if (Mathf.Abs(currentMoveInput) < moveDeadZone)
+                {
+                    // No input -> passive slide down
+                    Vector2 downhill = -groundTangent;
+                    float slideScale = Mathf.Clamp01(slopeAngle / maxSlopeAngle);
+                    rb.linearVelocity = new Vector2(downhill.x * slideSpeed * slideScale, rb.linearVelocity.y);
+                }
+                else if (tryingToGoUphill && !hasRecentDashClimb)
+                {
+                    // Trying to go uphill but not enough boost -> force slide down instead
+                    Vector2 downhill = -groundTangent;
+                    float slideScale = Mathf.Clamp01(slopeAngle / maxSlopeAngle);
+                    rb.linearVelocity = new Vector2(downhill.x * slideSpeed * slideScale, rb.linearVelocity.y);
+                }
+                else
+                {
+                    // Allow movement along slope (normal walking or dash-enabled climb)
+                    rb.linearVelocity = new Vector2(desiredAlongSlope.x, rb.linearVelocity.y);
+                }
+            }
+            else
+            {
+                // Flat ground or not grounded: normal horizontal movement
+                if (moveAction != null && moveAction.enabled && isMovementEnabled && !isChargingDash)
+                {
+                    rb.linearVelocity = new Vector2(currentMoveInput * moveSpeed, rb.linearVelocity.y);
+                }
+                else if (!isChargingDash)
+                {
+                    rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                }
             }
         }
         
@@ -360,6 +429,10 @@ public class NovoMovimento : MonoBehaviour
         // Apply horizontal velocity
         rb.linearVelocity = new Vector2(boostVelocity, rb.linearVelocity.y);
 
+        // Track the last dash magnitude and time for slope-climb checks
+        lastDashBoostMagnitude = Mathf.Abs(boostVelocity);
+        lastDashReleaseTime = Time.time;
+
         print($"Dash Released! Charge: {chargePercent:P0}, Boost: {boostVelocity:F2}, Direction: {dashChargeDirection}");
 
         // Reset dash state
@@ -384,6 +457,22 @@ public class NovoMovimento : MonoBehaviour
 
         AnimationState next = GetAnimationState(horizontalInput);
         PlayAnimation(next);
+    }
+
+    // Raycast downwards from the groundCheck to determine the ground normal for slope handling.
+    private Vector2 GetGroundNormal()
+    {
+        if (groundCheck == null)
+            return Vector2.up;
+
+        var origin = groundCheck.position;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, slopeCheckDistance, groundLayer);
+        if (hit.collider != null)
+        {
+            return hit.normal;
+        }
+
+        return Vector2.up;
     }
 
     private AnimationState GetAnimationState(float horizontalInput)
