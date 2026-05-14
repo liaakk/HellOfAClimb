@@ -24,6 +24,7 @@ public class NovoMovimento : MonoBehaviour
     private InputAction jumpAction;
     private float currentMoveInput = 0f;
     private bool isMovementEnabled = true;
+    private bool isStartupDelayActive = true; // Prevents movement during initial 2 second delay
     
     // Dash/Air Boost System
     private bool isChargingDash = false;
@@ -134,6 +135,9 @@ public class NovoMovimento : MonoBehaviour
             DisableMovement();
             StartCoroutine(MarkKnockedPlayedOnce());
         }
+
+        // Disable movement for the first 2 seconds after game start
+        StartCoroutine(EnableMovementAfterDelay(2f));
     }
 
     void Update()
@@ -195,7 +199,7 @@ public class NovoMovimento : MonoBehaviour
         // Ground: Enable movement
         if (isGrounded)
         {
-            if (!isChargingJump)
+            if (!isChargingJump && !isStartupDelayActive)
             {
                 ImpulseTimer = initialImpulseTimer;
                 EnableMovement();
@@ -592,6 +596,16 @@ public class NovoMovimento : MonoBehaviour
             yield return null;
         }
         knockedPlayedOnce = true;
+    }
+
+    private System.Collections.IEnumerator EnableMovementAfterDelay(float delaySeconds)
+    {
+        // Wait for the specified delay
+        yield return new WaitForSeconds(delaySeconds);
+        // Disable the startup delay flag
+        isStartupDelayActive = false;
+        // Enable movement after the delay
+        EnableMovement();
     }
 
     // Input System friendly query for "any key or button pressed this frame".
