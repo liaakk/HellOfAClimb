@@ -11,6 +11,7 @@ public class NovoMovimento : MonoBehaviour
     public LayerMask groundLayer;
 
     private Rigidbody2D rb;
+    private AudioSource somQueda;
     private BoxCollider2D groundCheckCollider;
     private bool isGrounded;
     private bool isChargingJump = false;
@@ -112,6 +113,7 @@ public class NovoMovimento : MonoBehaviour
     {
         rb = this.GetComponent<Rigidbody2D>();
         groundCheckCollider = groundCheck.GetComponent<BoxCollider2D>();
+        somQueda = this.GetComponent<AudioSource>();
         
         if (groundCheckCollider == null)
             Debug.LogError("NovoMovimento: groundCheck child does not have a BoxCollider2D! Ground detection will not work.");
@@ -531,6 +533,9 @@ public class NovoMovimento : MonoBehaviour
     {
         if (SpritePlayer == null) return;
         if (isInSpecialAnimation) return; // already handling a special animation
+
+        somQueda.Play();
+        print("somQueda played");
 
         isInSpecialAnimation = true;
         DisableMovement();
