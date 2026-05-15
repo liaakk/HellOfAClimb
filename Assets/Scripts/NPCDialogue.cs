@@ -5,6 +5,10 @@ using TMPro;
 
 public class NPCDialogue : MonoBehaviour
 {
+    // Animation
+    public Animator animator; //referência ao Animator do NPC
+    // name of the trigger parameter used to start the talk animation (configurable in inspector)
+    public string talkTrigger = "SadimTalk";
     //SOBRE O NPC
     public string npcName; //identificar o NPC
     public string[] lines; //falas do NPC
@@ -93,6 +97,48 @@ public class NPCDialogue : MonoBehaviour
         speechBubble.SetActive(true);
         dialogueActive = true;
         index = 0;
+
+        // trigger animation if animator assigned and parameter exists
+        if (animator != null)
+        {
+            bool hasParam = false;
+            foreach (var p in animator.parameters)
+            {
+                if (p.name == talkTrigger)
+                {
+                    hasParam = true;
+                    break;
+                }
+            }
+
+            if (hasParam)
+            {
+                animator.SetTrigger(talkTrigger);
+            }
+            else
+            {
+                string paramList = "";
+                if (animator.parameters != null && animator.parameters.Length > 0)
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    foreach (var p in animator.parameters)
+                    {
+                        sb.AppendFormat("{0} ({1}), ", p.name, p.type);
+                    }
+                    paramList = sb.ToString().TrimEnd(' ', ',');
+                }
+                else
+                {
+                    paramList = "(none)";
+                }
+
+                Debug.LogWarning($"Animator on '{gameObject.name}' does not have a parameter named '{talkTrigger}'. Available parameters: {paramList}. Add a Trigger parameter with this name or change `talkTrigger` in the inspector.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"No Animator assigned on '{gameObject.name}'. Assign one in the inspector to play talk animations.");
+        }
 
         ShowLine();
     }
