@@ -41,6 +41,15 @@ public class NovoMovimento : MonoBehaviour
     private AnimationState currentAnimationState;
     private bool hasAnimationState;
     private bool holdPlayedThisCharge = false;
+    private Collider2D playerCollider;
+    private bool isInGunk = false;
+    private bool hasGunkJumpReset = false;
+    private float nextGunkJumpResetTime = 0f;
+    private float baseGravityScale = 1f;
+    private float baseLinearDamping = 0f;
+    private float landingMomentumX = 0f;
+    private float landingMomentumDecayTimer = 0f;
+    private bool wasInGunkLastFrame = false;
 
     [Header("Dash Settings")]
     public int maxAirDashes = 1; // Max dashes per jump
@@ -48,6 +57,17 @@ public class NovoMovimento : MonoBehaviour
     public float dashBoostForce = 15f;
     public float dashFallSpeed = 0.5f; // slow descent while charging
     public float ledgeFallCooldown = 0.2f; // Delay before dash is usable when falling off ledge
+
+    [Header("Gunk")]
+    public LayerMask gunkLayer;
+    public float gunkSlowFactor = 0.5f; // Multiplier to apply to moveSpeed when in gunk
+    public float gunkGravityFactor = 0.6f; // Multiplier to apply to gravity while in gunk
+    public float gunkLinearDamping = 8f; // Extra drag while in gunk to slow all movement
+    public float gunkJumpResetInterval = 0.5f; // While in gunk, refresh jump access every interval
+
+    [Header("Landing Momentum")]
+    public float landingMomentumRetentionFactor = 0.4f; // How much dash X velocity to keep on landing (0-1)
+    public float landingMomentumDecayTime = 0.3f; // Seconds to gradually decay momentum
 
     [Header("Slope / Slide Settings")]
     [Tooltip("Distance used to raycast downwards to detect ground normal for slope calculations.")]
@@ -112,11 +132,21 @@ public class NovoMovimento : MonoBehaviour
     void Start()
     {
         rb = this.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            baseGravityScale = rb.gravityScale;
+            baseLinearDamping = rb.linearDamping;
+        }
+
+        playerCollider = this.GetComponent<Collider2D>();
         groundCheckCollider = groundCheck.GetComponent<BoxCollider2D>();
         somQueda = this.GetComponent<AudioSource>();
         
         if (groundCheckCollider == null)
             Debug.LogError("NovoMovimento: groundCheck child does not have a BoxCollider2D! Ground detection will not work.");
+
+        if (playerCollider == null)
+            Debug.LogError("NovoMovimento: player does not have a Collider2D! Gunk detection will not work.");
         
         initialImpulseTimer = ImpulseTimer;
         
@@ -158,16 +188,66 @@ public class NovoMovimento : MonoBehaviour
             if (groundCheck != null)
                 Debug.LogWarning("groundCheckCollider not found! Make sure groundCheck child has a BoxCollider2D component.");
         }
+
+        if (playerCollider != null)
+        {
+            isInGunk = playerCollider.IsTouchingLayers(gunkLayer);
+        }
+        else
+        {
+            isInGunk = false;
+        }
+
+        if (isInGunk)
+        {
+            if (!wasInGunkLastFrame)
+                print("In gunk");
+            if (Time.time >= nextGunkJumpResetTime)
+            {
+                hasGunkJumpReset = true;
+                // Also reset available dashes when granting a jump reset from gunk
+                dashesRemaining = maxAirDashes;
+                nextGunkJumpResetTime = Time.time + gunkJumpResetInterval;
+            }
+        }
+        else
+        {
+            if (wasInGunkLastFrame)
+                print("Out of gunk");
+            hasGunkJumpReset = false;
+            nextGunkJumpResetTime = 0f;
+        }
+        wasInGunkLastFrame = isInGunk;
+
+        if (rb != null)
+        {
+            float gravityFactor = isInGunk ? Mathf.Max(0f, gunkGravityFactor) : 1f;
+            rb.gravityScale = baseGravityScale * gravityFactor;
+            rb.linearDamping = isInGunk ? Mathf.Max(baseLinearDamping, gunkLinearDamping) : baseLinearDamping;
+        }
         
         // Reset dashes when grounded
         if (isGrounded && !wasGroundedLastFrame)
         {
             dashesRemaining = maxAirDashes;
+            // Preserve some momentum from dash/air movement when landing
+            landingMomentumX = rb.linearVelocity.x * landingMomentumRetentionFactor;
+            landingMomentumDecayTimer = landingMomentumDecayTime;
 
             // Detect heavy fall on landing
             if (prevYVelocity < -bigFallVelocityThreshold)
             {
                 TriggerBigFallSequence();
+            }
+        }
+        
+        // Decay landing momentum over time
+        if (landingMomentumDecayTimer > 0f)
+        {
+            landingMomentumDecayTimer -= Time.deltaTime;
+            if (landingMomentumDecayTimer <= 0f)
+            {
+                landingMomentumX = 0f;
             }
         }
         
@@ -183,6 +263,9 @@ public class NovoMovimento : MonoBehaviour
         if (isDashBoostActive && isGrounded)
         {
             isDashBoostActive = false;
+            // Preserve momentum from the dash when boost ends on landing
+            landingMomentumX = rb.linearVelocity.x * landingMomentumRetentionFactor;
+            landingMomentumDecayTimer = landingMomentumDecayTime;
         }
         
         // Read movement input
@@ -233,11 +316,12 @@ public class NovoMovimento : MonoBehaviour
             if (onSlope)
             {
                 Vector2 groundTangent = new Vector2(groundNormal.y, -groundNormal.x).normalized; // along-surface direction
+                float currentMoveSpeed = isInGunk ? moveSpeed * gunkSlowFactor : moveSpeed;
 
                 // Determine desired movement along the slope
                 float dot = Vector2.Dot(groundTangent, Vector2.right);
                 float signDot = Mathf.Sign(dot == 0f ? 1f : dot);
-                Vector2 desiredAlongSlope = groundTangent * currentMoveInput * moveSpeed * signDot;
+                Vector2 desiredAlongSlope = groundTangent * currentMoveInput * currentMoveSpeed * signDot;
 
                 // Is the player trying to go uphill?
                 bool tryingToGoUphill = Vector2.Dot(desiredAlongSlope, Vector2.up) > 0f;
@@ -269,13 +353,21 @@ public class NovoMovimento : MonoBehaviour
             else
             {
                 // Flat ground or not grounded: normal horizontal movement
+                float currentMoveSpeed = isInGunk ? moveSpeed * gunkSlowFactor : moveSpeed;
                 if (moveAction != null && moveAction.enabled && isMovementEnabled && !isChargingDash)
                 {
-                    rb.linearVelocity = new Vector2(currentMoveInput * moveSpeed, rb.linearVelocity.y);
+                    float moveVelocity = currentMoveInput * currentMoveSpeed;
+                    // Blend input movement with landing momentum (momentum gradually decays)
+                    float momentumBlend = Mathf.Clamp01(landingMomentumDecayTimer / landingMomentumDecayTime);
+                    moveVelocity += landingMomentumX * momentumBlend;
+                    rb.linearVelocity = new Vector2(moveVelocity, rb.linearVelocity.y);
                 }
                 else if (!isChargingDash)
                 {
-                    rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                    // Maintain momentum while no input
+                    float momentumBlend = Mathf.Clamp01(landingMomentumDecayTimer / landingMomentumDecayTime);
+                    float momentumVelocity = landingMomentumX * momentumBlend;
+                    rb.linearVelocity = new Vector2(momentumVelocity, rb.linearVelocity.y);
                 }
             }
         }
@@ -311,16 +403,18 @@ public class NovoMovimento : MonoBehaviour
         // Mid-air horizontal boost system
         if (!isGrounded && !isChargingJump)
         {
+            float gravityFactor = isInGunk ? Mathf.Max(0f, gunkGravityFactor) : 1f;
+
             // Gravity adjustments while in air (preserve dash boost behavior)
             if (!isDashBoostActive)
             {
                 if (rb.linearVelocity.y < 0)
                 {
-                    rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+                    rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * gravityFactor * Time.deltaTime;
                 }
                 else if (rb.linearVelocity.y > 0 && !isChargingJump)
                 {
-                    rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+                    rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * gravityFactor * Time.deltaTime;
                 }
             }
             // Start charging if holding left/right AND have dashes left AND cooldown passed
@@ -347,12 +441,10 @@ public class NovoMovimento : MonoBehaviour
                 // Slow fall while charging
                 rb.linearVelocity = new Vector2(0f, Mathf.Max(rb.linearVelocity.y, -dashFallSpeed));
                 
-                print($"Dash Charging: {dashChargeTimer:F2}s / {dashChargeMaxTime:F2}s");
-                
                 // Release if input is released or max charge time reached
                 if (currentMoveInput == 0f || dashChargeTimer >= dashChargeMaxTime)
                 {
-                    print($"Dash Release Triggered - Timer: {dashChargeTimer:F2}s, Max: {dashChargeMaxTime:F2}s, Direction: {dashChargeDirection}");
+                    print($"Dash: {Mathf.Clamp01(dashChargeTimer / dashChargeMaxTime):P0}");
                     ApplyDashBoost();
                     lastDashTime = Time.time;
                 }
@@ -368,6 +460,20 @@ public class NovoMovimento : MonoBehaviour
             }
         }
         #endregion
+    }
+
+    private void FixedUpdate()
+    {
+        if (rb == null || !isInGunk)
+            return;
+
+        float maxGunkSpeed = Mathf.Abs(moveSpeed * Mathf.Clamp01(gunkSlowFactor));
+        float clampedX = Mathf.Clamp(rb.linearVelocity.x, -maxGunkSpeed, maxGunkSpeed);
+
+        if (!Mathf.Approximately(clampedX, rb.linearVelocity.x))
+        {
+            rb.linearVelocity = new Vector2(clampedX, rb.linearVelocity.y);
+        }
     }
 
     // Basic Movement
@@ -396,13 +502,18 @@ public class NovoMovimento : MonoBehaviour
     private void OnJumpStarted(InputAction.CallbackContext ctx)
     {
         DisableMovement(); // Desativa o movimento horizontal durante o carregamento do salto
-        if (isGrounded)
+        if (isGrounded || hasGunkJumpReset)
         {
             print("Jump Pressed!");
             isChargingJump = true; // start charging
             holdPlayedThisCharge = false; // allow hold animation to play once for this charge
             dashesRemaining = maxAirDashes; // Reset dashes on jump
             airStateStartTime = Time.time; // Dash immediately available when jumping
+
+            if (!isGrounded)
+            {
+                hasGunkJumpReset = false;
+            }
         }
     }
 
@@ -439,7 +550,7 @@ public class NovoMovimento : MonoBehaviour
         lastDashBoostMagnitude = Mathf.Abs(boostVelocity);
         lastDashReleaseTime = Time.time;
 
-        print($"Dash Released! Charge: {chargePercent:P0}, Boost: {boostVelocity:F2}, Direction: {dashChargeDirection}");
+        // Momentum and direction feedback moved to release trigger above
 
         // Reset dash state
         isChargingDash = false;

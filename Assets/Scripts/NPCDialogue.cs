@@ -5,14 +5,13 @@ using TMPro;
 
 public class NPCDialogue : MonoBehaviour
 {
-    // Animation
-    public Animator animator; //referência ao Animator do NPC
-    // name of the trigger parameter used to start the talk animation (configurable in inspector)
-    public string talkTrigger = "SadimTalk";
+    public Animator animator; //para controlar animações do NPC
+    public string talkState = "SadimTalk"; // state name to play while talking
+    public string idleState = "SadimIdle"; // optional state to return to when dialogue ends
     //SOBRE O NPC
-    public string npcName; //identificar o NPC
     public string[] lines; //falas do NPC
     private int index = 0; //controlo da fala atual
+    public string npcName; //nome do NPC para definir falas específicas
 
     //SOBRE O TEXTO
     public GameObject speechBubble;
@@ -26,7 +25,7 @@ public class NPCDialogue : MonoBehaviour
 
     //ESTADO DO DIÁLOGO
     private bool dialogueActive = false;
-    private bool hasStartedDialogue = false;
+    private bool hasAutoStartedOnce = false;
 
     //HINT (TECLA E)
     public GameObject hintText;
@@ -50,11 +49,25 @@ public class NPCDialogue : MonoBehaviour
     {
         bool isNear = IsPlayerNear();
 
-        // começa automaticamente quando o player está perto
-        if (isNear && !hasStartedDialogue)
+        // first encounter starts automatically once
+        if (isNear && !dialogueActive && !hasAutoStartedOnce)
         {
             StartDialogue();
-            hasStartedDialogue = true;
+            hasAutoStartedOnce = true;
+        }
+
+        // press E to start the dialogue when close and idle
+        if (!dialogueActive && isNear && Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            hasPressedE = true;
+            hintText.SetActive(false);
+            StartDialogue();
+        }
+
+        // if player leaves while dialogue active, end the dialogue (and stop talk animation)
+        if (dialogueActive && !isNear)
+        {
+            EndDialogue();
         }
 
         // tecla E (para avançar no diálogo)
@@ -79,8 +92,8 @@ public class NPCDialogue : MonoBehaviour
             }
         }
 
-        // hint só aparece quando está perto e em diálogo
-        if (dialogueActive && isNear && !hasPressedE)
+        // hint aparece quando está perto e ainda não pressionou E neste ciclo
+        if (isNear && !hasPressedE)
             {
                 hintText.SetActive(true);
             }
@@ -98,49 +111,35 @@ public class NPCDialogue : MonoBehaviour
         dialogueActive = true;
         index = 0;
 
-        // trigger animation if animator assigned and parameter exists
-        if (animator != null)
+        // play talk animation while dialogue is active
+        if (animator != null && !string.IsNullOrEmpty(talkState))
         {
-            bool hasParam = false;
-            foreach (var p in animator.parameters)
-            {
-                if (p.name == talkTrigger)
-                {
-                    hasParam = true;
-                    break;
-                }
-            }
-
-            if (hasParam)
-            {
-                animator.SetTrigger(talkTrigger);
-            }
-            else
-            {
-                string paramList = "";
-                if (animator.parameters != null && animator.parameters.Length > 0)
-                {
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    foreach (var p in animator.parameters)
-                    {
-                        sb.AppendFormat("{0} ({1}), ", p.name, p.type);
-                    }
-                    paramList = sb.ToString().TrimEnd(' ', ',');
-                }
-                else
-                {
-                    paramList = "(none)";
-                }
-
-                Debug.LogWarning($"Animator on '{gameObject.name}' does not have a parameter named '{talkTrigger}'. Available parameters: {paramList}. Add a Trigger parameter with this name or change `talkTrigger` in the inspector.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"No Animator assigned on '{gameObject.name}'. Assign one in the inspector to play talk animations.");
+            animator.Play(talkState);
         }
 
         ShowLine();
+    }
+
+    public void EndDialogue()
+    {
+        if (!dialogueActive) return;
+
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        isTyping = false;
+        speechBubble.SetActive(false);
+        hintText.SetActive(false);
+        dialogueActive = false;
+        hasPressedE = false;
+
+        if (animator != null && !string.IsNullOrEmpty(idleState))
+        {
+            animator.Play(idleState);
+        }
     }
 
     void NextLine()
@@ -149,7 +148,8 @@ public class NPCDialogue : MonoBehaviour
 
         if (index >= lines.Length)
         {
-            index = 0; // LOOP
+            EndDialogue();
+            return;
         }
 
         ShowLine();
@@ -161,6 +161,12 @@ public class NPCDialogue : MonoBehaviour
         if (lines == null || lines.Length == 0)
         {
             Debug.LogWarning("NPC sem falas!");
+            return;
+        }
+
+        if (index < 0 || index >= lines.Length)
+        {
+            EndDialogue();
             return;
         }
 
