@@ -72,12 +72,12 @@ public class NovoMovimento : MonoBehaviour
     [Header("Slope / Slide Settings")]
     [Tooltip("Distance used to raycast downwards to detect ground normal for slope calculations.")]
     public float slopeCheckDistance = 0.6f;
-    [Tooltip("How fast the player passively slides down slopes when not actively climbing.")]
+    [Tooltip("Minimum speed used to keep the player sliding on a slope.")]
     public float slideSpeed = 3f;
     [Tooltip("Minimum angle (degrees) considered a slope to start sliding.")]
     public float slopeSlideAngleThreshold = 5f;
-    [Tooltip("Maximum slope angle for normalization (used to scale sliding).")]
-    public float maxSlopeAngle = 60f;
+    [Tooltip("How much falling speed increases downhill slide speed.")]
+    public float slopeFallSpeedFactor = 0.6f;
     [Tooltip("How much dash boost contributes to slope-climb ability (multiplier).")]
     public float dashClimbStrengthFactor = 1f;
     [Tooltip("Time window after releasing a dash during which slope-climb is allowed.")]
@@ -86,6 +86,10 @@ public class NovoMovimento : MonoBehaviour
     // runtime slope/dash tracking
     private float lastDashBoostMagnitude = 0f;
     private float lastDashReleaseTime = -999f;
+    private float lastDashDirection = 0f;
+    private bool wasOnSlopeLastFrame = false;
+    private bool wasGroundedDebugLastFrame = false;
+    private Collider2D lastSlopeHitCollider = null;
 
     [Header("Queda")]
     [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
@@ -187,6 +191,12 @@ public class NovoMovimento : MonoBehaviour
             isGrounded = false;
             if (groundCheck != null)
                 Debug.LogWarning("groundCheckCollider not found! Make sure groundCheck child has a BoxCollider2D component.");
+        }
+
+        if (isGrounded != wasGroundedDebugLastFrame)
+        {
+            Debug.Log($"NovoMovimento: grounded = {isGrounded}, groundLayer = {groundLayer.value}");
+            wasGroundedDebugLastFrame = isGrounded;
         }
 
         if (playerCollider != null)
@@ -313,41 +323,43 @@ public class NovoMovimento : MonoBehaviour
 
             bool onSlope = isGrounded && slopeAngle > slopeSlideAngleThreshold;
 
+            if (onSlope != wasOnSlopeLastFrame)
+            {
+                Debug.Log(onSlope
+                    ? $"NovoMovimento: player entered slope (angle {slopeAngle:0.0}, threshold {slopeSlideAngleThreshold:0.0})"
+                    : "NovoMovimento: player left slope");
+                wasOnSlopeLastFrame = onSlope;
+            }
+
+            if (isGrounded)
+            {
+                Debug.Log($"NovoMovimento: slopeAngle = {slopeAngle:0.0}, onSlope = {onSlope}");
+            }
+
             if (onSlope)
             {
-                Vector2 groundTangent = new Vector2(groundNormal.y, -groundNormal.x).normalized; // along-surface direction
-                float currentMoveSpeed = isInGunk ? moveSpeed * gunkSlowFactor : moveSpeed;
+                Vector2 groundTangent = new Vector2(groundNormal.y, -groundNormal.x).normalized;
+                Vector2 downhillDirection = Vector2.Dot(groundTangent, Vector2.down) > 0f ? groundTangent : -groundTangent;
+                Vector2 uphillDirection = -downhillDirection;
+                float slopeSteepness = Mathf.Clamp01((slopeAngle - slopeSlideAngleThreshold) / (90f - slopeSlideAngleThreshold));
+                float fallSpeed = Mathf.Max(0f, -rb.linearVelocity.y);
+                float slideSpeedFromFall = slideSpeed + (fallSpeed * slopeFallSpeedFactor);
+                float carriedDownhillSpeed = Mathf.Max(0f, Vector2.Dot(rb.linearVelocity, downhillDirection));
+                float targetDownhillSpeed = Mathf.Max(carriedDownhillSpeed, slideSpeedFromFall * slopeSteepness);
 
-                // Determine desired movement along the slope
-                float dot = Vector2.Dot(groundTangent, Vector2.right);
-                float signDot = Mathf.Sign(dot == 0f ? 1f : dot);
-                Vector2 desiredAlongSlope = groundTangent * currentMoveInput * currentMoveSpeed * signDot;
+                bool canClimbWithDash = (Time.time - lastDashReleaseTime) <= dashClimbWindow
+                                        && lastDashBoostMagnitude > 0f
+                                        && Mathf.Sign(lastDashDirection) != 0f
+                                        && Vector2.Dot(Vector2.right * lastDashDirection, uphillDirection) > 0f;
 
-                // Is the player trying to go uphill?
-                bool tryingToGoUphill = Vector2.Dot(desiredAlongSlope, Vector2.up) > 0f;
-
-                // Allow climb if a recent dash provided enough boost
-                bool hasRecentDashClimb = (Time.time - lastDashReleaseTime) <= dashClimbWindow
-                                          && lastDashBoostMagnitude * dashClimbStrengthFactor >= slopeAngle;
-
-                if (Mathf.Abs(currentMoveInput) < moveDeadZone)
+                if (canClimbWithDash)
                 {
-                    // No input -> passive slide down
-                    Vector2 downhill = -groundTangent;
-                    float slideScale = Mathf.Clamp01(slopeAngle / maxSlopeAngle);
-                    rb.linearVelocity = new Vector2(downhill.x * slideSpeed * slideScale, rb.linearVelocity.y);
-                }
-                else if (tryingToGoUphill && !hasRecentDashClimb)
-                {
-                    // Trying to go uphill but not enough boost -> force slide down instead
-                    Vector2 downhill = -groundTangent;
-                    float slideScale = Mathf.Clamp01(slopeAngle / maxSlopeAngle);
-                    rb.linearVelocity = new Vector2(downhill.x * slideSpeed * slideScale, rb.linearVelocity.y);
+                    float climbSpeed = lastDashBoostMagnitude * dashClimbStrengthFactor * Mathf.Max(0.25f, slopeSteepness);
+                    rb.linearVelocity = uphillDirection * climbSpeed;
                 }
                 else
                 {
-                    // Allow movement along slope (normal walking or dash-enabled climb)
-                    rb.linearVelocity = new Vector2(desiredAlongSlope.x, rb.linearVelocity.y);
+                    rb.linearVelocity = downhillDirection * targetDownhillSpeed;
                 }
             }
             else
@@ -549,6 +561,7 @@ public class NovoMovimento : MonoBehaviour
         // Track the last dash magnitude and time for slope-climb checks
         lastDashBoostMagnitude = Mathf.Abs(boostVelocity);
         lastDashReleaseTime = Time.time;
+        lastDashDirection = Mathf.Sign(boostVelocity);
 
         // Momentum and direction feedback moved to release trigger above
 
@@ -586,7 +599,18 @@ public class NovoMovimento : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, slopeCheckDistance, groundLayer);
         if (hit.collider != null)
         {
+            if (hit.collider != lastSlopeHitCollider)
+            {
+                Debug.Log($"NovoMovimento: slope ray hit {hit.collider.name} (layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}), normal {hit.normal}, angle {Vector2.Angle(hit.normal, Vector2.up):0.0}");
+                lastSlopeHitCollider = hit.collider;
+            }
             return hit.normal;
+        }
+
+        if (lastSlopeHitCollider != null)
+        {
+            Debug.Log("NovoMovimento: slope ray no longer hitting a collider");
+            lastSlopeHitCollider = null;
         }
 
         return Vector2.up;
