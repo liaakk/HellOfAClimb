@@ -9,6 +9,7 @@ public class NovoMovimento : MonoBehaviour
     public float ImpulseTimer;
     public float ImpulseForce;
     public LayerMask groundLayer;
+    public LayerMask rampLayer;
 
     private Rigidbody2D rb;
     private AudioSource somQueda;
@@ -78,6 +79,8 @@ public class NovoMovimento : MonoBehaviour
     public float slopeSlideAngleThreshold = 5f;
     [Tooltip("How much falling speed increases downhill slide speed.")]
     public float slopeFallSpeedFactor = 0.6f;
+    [Tooltip("How quickly uphill dash momentum decays on a slope before the player starts sliding back down.")]
+    public float slopeClimbDecaySpeed = 10f;
     [Tooltip("How much dash boost contributes to slope-climb ability (multiplier).")]
     public float dashClimbStrengthFactor = 1f;
     [Tooltip("Time window after releasing a dash during which slope-climb is allowed.")]
@@ -90,6 +93,9 @@ public class NovoMovimento : MonoBehaviour
     private bool wasOnSlopeLastFrame = false;
     private bool wasGroundedDebugLastFrame = false;
     private Collider2D lastSlopeHitCollider = null;
+    private readonly ContactPoint2D[] groundContacts = new ContactPoint2D[16];
+
+    private LayerMask GroundAndRampMask => groundLayer | rampLayer;
 
     [Header("Queda")]
     [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
@@ -184,7 +190,7 @@ public class NovoMovimento : MonoBehaviour
         // Check if grounded using the BoxCollider2D from groundCheck child
         if (groundCheckCollider != null)
         {
-            isGrounded = groundCheckCollider.IsTouchingLayers(groundLayer);
+            isGrounded = groundCheckCollider.IsTouchingLayers(GroundAndRampMask);
         }
         else
         {
@@ -195,7 +201,7 @@ public class NovoMovimento : MonoBehaviour
 
         if (isGrounded != wasGroundedDebugLastFrame)
         {
-            Debug.Log($"NovoMovimento: grounded = {isGrounded}, groundLayer = {groundLayer.value}");
+            Debug.Log($"NovoMovimento: grounded = {isGrounded}, groundLayer = {groundLayer.value}, rampLayer = {rampLayer.value}");
             wasGroundedDebugLastFrame = isGrounded;
         }
 
@@ -331,11 +337,6 @@ public class NovoMovimento : MonoBehaviour
                 wasOnSlopeLastFrame = onSlope;
             }
 
-            if (isGrounded)
-            {
-                Debug.Log($"NovoMovimento: slopeAngle = {slopeAngle:0.0}, onSlope = {onSlope}");
-            }
-
             if (onSlope)
             {
                 Vector2 groundTangent = new Vector2(groundNormal.y, -groundNormal.x).normalized;
@@ -352,10 +353,24 @@ public class NovoMovimento : MonoBehaviour
                                         && Mathf.Sign(lastDashDirection) != 0f
                                         && Vector2.Dot(Vector2.right * lastDashDirection, uphillDirection) > 0f;
 
+                float uphillSpeed = Mathf.Max(0f, Vector2.Dot(rb.linearVelocity, uphillDirection));
+
                 if (canClimbWithDash)
                 {
                     float climbSpeed = lastDashBoostMagnitude * dashClimbStrengthFactor * Mathf.Max(0.25f, slopeSteepness);
-                    rb.linearVelocity = uphillDirection * climbSpeed;
+                    rb.linearVelocity = uphillDirection * Mathf.Max(uphillSpeed, climbSpeed);
+                }
+                else if (uphillSpeed > 0f)
+                {
+                    float decayedUphillSpeed = Mathf.MoveTowards(uphillSpeed, 0f, slopeClimbDecaySpeed * Time.deltaTime);
+                    if (decayedUphillSpeed > 0f)
+                    {
+                        rb.linearVelocity = uphillDirection * decayedUphillSpeed;
+                    }
+                    else
+                    {
+                        rb.linearVelocity = downhillDirection * targetDownhillSpeed;
+                    }
                 }
                 else
                 {
@@ -592,13 +607,55 @@ public class NovoMovimento : MonoBehaviour
     // Raycast downwards from the groundCheck to determine the ground normal for slope handling.
     private Vector2 GetGroundNormal()
     {
+        if (rb != null)
+        {
+            int contactCount = rb.GetContacts(groundContacts);
+            Vector2 bestNormal = Vector2.zero;
+            float bestSlopeAngle = 0f;
+
+            for (int i = 0; i < contactCount; i++)
+            {
+                ContactPoint2D contact = groundContacts[i];
+                Collider2D contactCollider = contact.collider;
+
+                if (contactCollider == groundCheckCollider || contactCollider == playerCollider)
+                    contactCollider = contact.otherCollider;
+
+                if (contactCollider == null)
+                    continue;
+
+                int contactLayerMask = 1 << contactCollider.gameObject.layer;
+                if ((GroundAndRampMask.value & contactLayerMask) == 0)
+                    continue;
+
+                float angle = Vector2.Angle(contact.normal, Vector2.up);
+                if (bestNormal == Vector2.zero || angle > bestSlopeAngle)
+                {
+                    bestNormal = contact.normal;
+                    bestSlopeAngle = angle;
+                }
+            }
+
+            if (bestNormal != Vector2.zero)
+            {
+                return bestNormal;
+            }
+        }
+
         if (groundCheck == null)
             return Vector2.up;
 
         var origin = groundCheck.position;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, slopeCheckDistance, groundLayer);
-        if (hit.collider != null)
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, Vector2.down, slopeCheckDistance, GroundAndRampMask);
+        for (int i = 0; i < hits.Length; i++)
         {
+            RaycastHit2D hit = hits[i];
+            if (hit.collider == null)
+                continue;
+
+            if (hit.collider == groundCheckCollider || hit.collider == playerCollider)
+                continue;
+
             if (hit.collider != lastSlopeHitCollider)
             {
                 Debug.Log($"NovoMovimento: slope ray hit {hit.collider.name} (layer {LayerMask.LayerToName(hit.collider.gameObject.layer)}), normal {hit.normal}, angle {Vector2.Angle(hit.normal, Vector2.up):0.0}");
