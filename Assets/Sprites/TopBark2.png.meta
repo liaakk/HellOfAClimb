@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: b36b86806515b4347a99a8ba7e88613d
+guid: 0f8d904b90171b942915aca629a245d4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7695630440520258733
-    second: InsideBark_0
+      213: 5398522705845287465
+    second: TopBark2_0
+  - first:
+      213: -1045163289115959369
+    second: TopBark2_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,7 +75,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 8192
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: 4
     textureCompression: 1
@@ -100,13 +103,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: InsideBark_0
+      name: TopBark2_0
       rect:
         serializedVersion: 2
-        x: 133
-        y: 17
-        width: 603
-        height: 1286
+        x: 0
+        y: 0
+        width: 608
+        height: 608
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +118,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: da494e9cc1f5cca60800000000000000
-      internalID: 7695630440520258733
+      spriteID: 92af9c16cc76bea40800000000000000
+      internalID: 5398522705845287465
       vertices: []
       indices: 
       edges: []
@@ -125,7 +128,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 13686b7a134aac6459662206f605e5b2
+    spriteID: 666cab40487c6a7459af6fb149b54e00
     internalID: 0
     vertices: []
     indices: 
@@ -133,9 +136,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":608.0,"y":608.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      InsideBark_0: 7695630440520258733
+      TopBark2_0: 5398522705845287465
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
