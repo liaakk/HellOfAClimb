@@ -1,54 +1,45 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class Pause_Menu : MonoBehaviour
+public class PauseMenu : MonoBehaviour
 {
+    public GameObject pauseMenu;
+    bool isPaused = false;
 
-    public GameObject PauseMenu;
-    public bool isPaused;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        PauseMenu.SetActive(false);
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if(isPaused)
+            if (isPaused)
             {
-                ResumeGame();
+                Resume();
             }
             else
             {
-                PauseGame();
+                Pause();
             }
         }
     }
-    public void PauseGame()
+
+    void Pause()
     {
+        pauseMenu.SetActive(true);
         Time.timeScale = 0f;
-        PauseMenu.SetActive(true);
         isPaused = true;
     }
 
-    public void ResumeGame()
+    public void Resume()
     {
+        pauseMenu.SetActive(false);
         Time.timeScale = 1f;
-        PauseMenu.SetActive(false);
         isPaused = false;
     }
 
-    public void GoToMainMenu()
+    public void LoadMainMenu()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
-
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
+    
 }
