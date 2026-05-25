@@ -15,7 +15,7 @@ TagManager:
   - gunkLayer
   - Ramp
   - gunkBoundary
-  - 
+  - Player
   - 
   - 
   - 
@@ -55,6 +55,9 @@ TagManager:
     locked: 0
   - name: Camera
     uniqueID: 2133972527
+    locked: 0
+  - name: CastShadows
+    uniqueID: 1481658653
     locked: 0
   m_RenderingLayers:
   - Default
