@@ -50,6 +50,7 @@ public class NovoMovimento : MonoBehaviour
     private float baseLinearDamping = 0f;
     private float landingMomentumX = 0f;
     private float landingMomentumDecayTimer = 0f;
+    private float lastSlopeMomentumX = 0f;
     private bool wasInGunkLastFrame = false;
 
     [Header("Dash Settings")]
@@ -96,6 +97,7 @@ public class NovoMovimento : MonoBehaviour
     private readonly ContactPoint2D[] groundContacts = new ContactPoint2D[16];
 
     private LayerMask GroundAndRampMask => groundLayer | rampLayer;
+    private LayerMask RampOnlyMask => rampLayer;
 
     [Header("Queda")]
     [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
@@ -329,6 +331,13 @@ public class NovoMovimento : MonoBehaviour
 
             bool onSlope = isGrounded && slopeAngle > slopeSlideAngleThreshold;
 
+            if (wasOnSlopeLastFrame && !onSlope)
+            {
+                // Keep part of the last ramp speed when the player leaves a ramp.
+                landingMomentumX = lastSlopeMomentumX * landingMomentumRetentionFactor;
+                landingMomentumDecayTimer = landingMomentumDecayTime;
+            }
+
             if (onSlope != wasOnSlopeLastFrame)
             {
                 Debug.Log(onSlope
@@ -376,6 +385,8 @@ public class NovoMovimento : MonoBehaviour
                 {
                     rb.linearVelocity = downhillDirection * targetDownhillSpeed;
                 }
+
+                lastSlopeMomentumX = rb.linearVelocity.x;
             }
             else
             {
@@ -625,7 +636,7 @@ public class NovoMovimento : MonoBehaviour
                     continue;
 
                 int contactLayerMask = 1 << contactCollider.gameObject.layer;
-                if ((GroundAndRampMask.value & contactLayerMask) == 0)
+                if ((RampOnlyMask.value & contactLayerMask) == 0)
                     continue;
 
                 float angle = Vector2.Angle(contact.normal, Vector2.up);
@@ -646,7 +657,7 @@ public class NovoMovimento : MonoBehaviour
             return Vector2.up;
 
         var origin = groundCheck.position;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, Vector2.down, slopeCheckDistance, GroundAndRampMask);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, Vector2.down, slopeCheckDistance, RampOnlyMask);
         for (int i = 0; i < hits.Length; i++)
         {
             RaycastHit2D hit = hits[i];
