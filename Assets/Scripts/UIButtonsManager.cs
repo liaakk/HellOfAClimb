@@ -10,7 +10,6 @@ public class UIButtonsManager : MonoBehaviour
     public Sprite[] buttonSprites;
 
     private int count = 0;
-
 // nisso aqui você pode definir quantos botões existem no jogo, e o script vai dividir os sprites igualmente entre eles
     private int totalButtons = 4;
 
