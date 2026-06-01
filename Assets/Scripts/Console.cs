@@ -170,11 +170,6 @@ public class DeveloperConsole : MonoBehaviour
         commands.Add("help", HelpCommand);
         commands.Add("set_timescale", SetTimeScaleCommand);
         commands.Add("dev2", TPGluttony);
-        commands.Add("dev1.5", TPDev15);
-        commands.Add("dev1.8", TPDev18);
-        commands.Add("dev2.2", TPDev22);
-        commands.Add("dev2.5", TPDev25);
-        commands.Add("dev2.8", TPDev28);
     }
 
     void ProcessCommand(string command)
@@ -228,71 +223,6 @@ public class DeveloperConsole : MonoBehaviour
         {
             player.transform.position = new Vector2(0, 72f);
             AppendOutput("Teleported to Gluttony");
-        }
-        else
-        {
-            AppendOutput("Player not found.");
-        }
-    }
-
-    void TPDev15(string[] args)
-    {
-        if (player != null)
-        {
-            player.transform.position = new Vector2(-6.5f, 35f);
-            AppendOutput("Teleported to dev1.5");
-        }
-        else
-        {
-            AppendOutput("Player not found.");
-        }
-    }
-
-    void TPDev18(string[] args)
-    {
-        if (player != null)
-        {
-            player.transform.position = new Vector2(-0.5f, 55f);
-            AppendOutput("Teleported to dev1.8");
-        }
-        else
-        {
-            AppendOutput("Player not found.");
-        }
-    }
-
-    void TPDev22(string[] args)
-    {
-        if (player != null)
-        {
-            player.transform.position = new Vector2(1.8f, 93f);
-            AppendOutput("Teleported to dev2.2");
-        }
-        else
-        {
-            AppendOutput("Player not found.");
-        }
-    }
-
-    void TPDev25(string[] args)
-    {
-        if (player != null)
-        {
-            player.transform.position = new Vector2(1.99f, 110f);
-            AppendOutput("Teleported to dev2.5");
-        }
-        else
-        {
-            AppendOutput("Player not found.");
-        }
-    }
-
-    void TPDev28(string[] args)
-    {
-        if (player != null)
-        {
-            player.transform.position = new Vector2(-9.2f, 140f);
-            AppendOutput("Teleported to dev2.8");
         }
         else
         {
