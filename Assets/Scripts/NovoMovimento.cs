@@ -17,8 +17,12 @@ public class NovoMovimento : MonoBehaviour
     private AudioSource somQueda;
     private BoxCollider2D groundCheckCollider;
     private bool isGrounded;
+    private bool isOnRamp;
     private bool isChargingJump = false;
+    private bool hasJumpedSinceLastGround = false;
     private float initialImpulseTimer;
+
+    public bool IsInGunk => isInGunk;
 
     [Header("Input")]
     [SerializeField] private InputActionAsset inputActionsAsset; // assign your InputSystem_Actions asset here
@@ -48,6 +52,7 @@ public class NovoMovimento : MonoBehaviour
     private bool isInGunk = false;
     private bool hasGunkJumpReset = false;
     private float nextGunkJumpResetTime = 0f;
+    private float gunkJumpChargeElapsed = 0f;
     private float baseGravityScale = 1f;
     private float baseLinearDamping = 0f;
     private float landingMomentumX = 0f;
@@ -68,6 +73,9 @@ public class NovoMovimento : MonoBehaviour
     public float gunkGravityFactor = 0.6f; // Multiplier to apply to gravity while in gunk
     public float gunkLinearDamping = 8f; // Extra drag while in gunk to slow all movement
     public float gunkJumpResetInterval = 0.5f; // While in gunk, refresh jump access every interval
+    public float gunkJumpAutoReleaseTime = 0.8f; // Hold time before jump auto-releases while in gunk
+    public float gunkJumpForceMultiplier = 0.6f; // Reduce jump height while in gunk
+    public float gunkJumpChargeSpeedMultiplier = 2f; // How much faster jump charge drains in gunk
 
     [Header("Landing Momentum")]
     public float landingMomentumRetentionFactor = 0.4f; // How much dash X velocity to keep on landing (0-1)
@@ -100,6 +108,7 @@ public class NovoMovimento : MonoBehaviour
 
     private LayerMask GroundAndRampMask => groundLayer | rampLayer;
     private LayerMask RampOnlyMask => rampLayer;
+    private bool IsSupported => isGrounded || isOnRamp;
 
     [Header("Queda")]
     [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
@@ -194,11 +203,13 @@ public class NovoMovimento : MonoBehaviour
         // Check if grounded using the BoxCollider2D from groundCheck child
         if (groundCheckCollider != null)
         {
-            isGrounded = groundCheckCollider.IsTouchingLayers(GroundAndRampMask);
+            isGrounded = groundCheckCollider.IsTouchingLayers(groundLayer);
+            isOnRamp = groundCheckCollider.IsTouchingLayers(rampLayer);
         }
         else
         {
             isGrounded = false;
+            isOnRamp = false;
             if (groundCheck != null)
                 Debug.LogWarning("groundCheckCollider not found! Make sure groundCheck child has a BoxCollider2D component.");
         }
@@ -207,6 +218,11 @@ public class NovoMovimento : MonoBehaviour
         {
             Debug.Log($"NovoMovimento: grounded = {isGrounded}, groundLayer = {groundLayer.value}, rampLayer = {rampLayer.value}");
             wasGroundedDebugLastFrame = isGrounded;
+        }
+
+        if (isGrounded && !wasGroundedLastFrame)
+        {
+            hasJumpedSinceLastGround = false;
         }
 
         if (playerCollider != null)
@@ -247,7 +263,7 @@ public class NovoMovimento : MonoBehaviour
         }
         
         // Reset dashes when grounded
-        if (isGrounded && !wasGroundedLastFrame)
+        if (IsSupported && !wasGroundedLastFrame)
         {
             dashesRemaining = maxAirDashes;
             // Preserve some momentum from dash/air movement when landing
@@ -272,15 +288,15 @@ public class NovoMovimento : MonoBehaviour
         }
         
         // Detect ledge fall (entering air without jumping)
-        if (!isGrounded && wasGroundedLastFrame && !isChargingJump)
+        if (!IsSupported && wasGroundedLastFrame && !isChargingJump)
         {
             airStateStartTime = Time.time; // Start cooldown for dash on ledge fall
         }
         
-        wasGroundedLastFrame = isGrounded;
+        wasGroundedLastFrame = IsSupported;
         
         // Clear boost protection when grounded
-        if (isDashBoostActive && isGrounded)
+        if (isDashBoostActive && IsSupported)
         {
             isDashBoostActive = false;
             // Preserve momentum from the dash when boost ends on landing
@@ -302,7 +318,7 @@ public class NovoMovimento : MonoBehaviour
         }
 
         // Ground: Enable movement
-        if (isGrounded)
+        if (IsSupported)
         {
             if (!isChargingJump && !isStartupDelayActive)
             {
@@ -325,13 +341,13 @@ public class NovoMovimento : MonoBehaviour
             // Detect slope under the player
             Vector2 groundNormal = Vector2.up;
             float slopeAngle = 0f;
-            if (isGrounded && groundCheck != null)
+            if (IsSupported && groundCheck != null)
             {
                 groundNormal = GetGroundNormal();
                 slopeAngle = Vector2.Angle(groundNormal, Vector2.up);
             }
 
-            bool onSlope = isGrounded && slopeAngle > slopeSlideAngleThreshold;
+            bool onSlope = isOnRamp && slopeAngle > slopeSlideAngleThreshold;
 
             if (wasOnSlopeLastFrame && !onSlope)
             {
@@ -430,18 +446,30 @@ public class NovoMovimento : MonoBehaviour
         // Charging jump while input is held
         if (isChargingJump)
         {
-            ImpulseTimer -= Time.deltaTime;
-            if (ImpulseTimer <= 0f)
+            if (isInGunk)
             {
-                isChargingJump = false;
-                Jump();
+                gunkJumpChargeElapsed += Time.deltaTime;
+                ImpulseTimer -= Time.deltaTime * Mathf.Max(1f, gunkJumpChargeSpeedMultiplier);
+                if (gunkJumpChargeElapsed >= Mathf.Max(0f, gunkJumpAutoReleaseTime))
+                {
+                    ReleaseChargedJump();
+                }
+            }
+            else
+            {
+                float jumpChargeSpeed = 1f;
+                ImpulseTimer -= Time.deltaTime * jumpChargeSpeed;
+                if (ImpulseTimer <= 0f)
+                {
+                    ReleaseChargedJump();
+                }
             }
         }
         #endregion
 
         #region Mid-Air Boost (Dash)
         // Mid-air horizontal boost system
-        if (!isGrounded && !isChargingJump)
+        if (!IsSupported && !isChargingJump)
         {
             float gravityFactor = isInGunk ? Mathf.Max(0f, gunkGravityFactor) : 1f;
 
@@ -542,15 +570,24 @@ public class NovoMovimento : MonoBehaviour
     private void OnJumpStarted(InputAction.CallbackContext ctx)
     {
         DisableMovement(); // Desativa o movimento horizontal durante o carregamento do salto
-        if (isGrounded || hasGunkJumpReset)
+        bool canStartJump = isGrounded || (isOnRamp && !hasJumpedSinceLastGround) || hasGunkJumpReset;
+
+        if (canStartJump)
         {
             print("Jump Pressed!");
             isChargingJump = true; // start charging
+            gunkJumpChargeElapsed = 0f;
             holdPlayedThisCharge = false; // allow hold animation to play once for this charge
-            dashesRemaining = maxAirDashes; // Reset dashes on jump
-            airStateStartTime = Time.time; // Dash immediately available when jumping
 
-            if (!isGrounded)
+            hasJumpedSinceLastGround = true;
+
+            if (isGrounded || hasGunkJumpReset)
+            {
+                dashesRemaining = maxAirDashes; // Reset dashes only on solid ground or gunk reset
+                airStateStartTime = Time.time; // Dash immediately available when jumping
+            }
+
+            if (!isGrounded && !isOnRamp)
             {
                 hasGunkJumpReset = false;
             }
@@ -561,17 +598,33 @@ public class NovoMovimento : MonoBehaviour
     {
         if (isChargingJump)
         {
-            isChargingJump = false;
-            Jump();
+            ReleaseChargedJump();
         }
+    }
+
+    private void ReleaseChargedJump()
+    {
+        if (!isChargingJump)
+            return;
+
+        isChargingJump = false;
+        gunkJumpChargeElapsed = 0f;
+        Jump();
     }
 
     void Jump()
     {
         DisableMovement(); // Desativa o movimento horizontal durante o salto
-        ImpulseTimer = ImpulseTimer + 1f;
-        print("Jumped! Impulse: " + (ImpulseForce / ImpulseTimer));
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, ImpulseForce / ImpulseTimer); // Aplica a força do salto
+        float chargedTimer = Mathf.Max(0.01f, ImpulseTimer + 1f);
+        float jumpForce = ImpulseForce / chargedTimer;
+        if (isInGunk)
+        {
+            jumpForce *= Mathf.Max(0f, gunkJumpForceMultiplier);
+        }
+
+        print("Jumped! Impulse: " + jumpForce);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce); // Aplica a força do salto
+        ImpulseTimer = initialImpulseTimer;
         // Reset hold-play flag so next charge can play hold animation once
         holdPlayedThisCharge = false;
     }

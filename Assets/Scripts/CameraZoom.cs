@@ -13,6 +13,11 @@ public class CameraZoom : MonoBehaviour
 
     private void Update()
     {
+        if (player != null && player.IsInGunk)
+        {
+            return;
+        }
+
         float targetZoom = normalZoom;
 
         if (player.IsChargingDash)
