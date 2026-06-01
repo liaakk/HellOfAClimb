@@ -170,6 +170,11 @@ public class DeveloperConsole : MonoBehaviour
         commands.Add("help", HelpCommand);
         commands.Add("set_timescale", SetTimeScaleCommand);
         commands.Add("dev2", TPGluttony);
+        commands.Add("dev1.5", args => TeleportPlayer(new Vector2(-6.5f, 35f), "dev1.5"));
+        commands.Add("dev1.8", args => TeleportPlayer(new Vector2(-0.5f, 55f), "dev1.8"));
+        commands.Add("dev2.2", args => TeleportPlayer(new Vector2(1.8f, 93f), "dev2.2"));
+        commands.Add("dev2.5", args => TeleportPlayer(new Vector2(1.99f, 110f), "dev2.5"));
+        commands.Add("dev2.8", args => TeleportPlayer(new Vector2(-9.2f, 140f), "dev2.8"));
     }
 
     void ProcessCommand(string command)
@@ -219,10 +224,15 @@ public class DeveloperConsole : MonoBehaviour
 
     void TPGluttony(string[] args)
     {
+        TeleportPlayer(new Vector2(0f, 72f), "Gluttony");
+    }
+
+    void TeleportPlayer(Vector2 position, string label)
+    {
         if (player != null)
         {
-            player.transform.position = new Vector2(0, 72f);
-            AppendOutput("Teleported to Gluttony");
+            player.transform.position = position;
+            AppendOutput("Teleported to " + label);
         }
         else
         {
