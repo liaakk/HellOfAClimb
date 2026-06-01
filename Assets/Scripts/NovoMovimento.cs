@@ -10,6 +10,8 @@ public class NovoMovimento : MonoBehaviour
     public float ImpulseForce;
     public LayerMask groundLayer;
     public LayerMask rampLayer;
+    public bool IsChargingJump => isChargingJump;
+    public bool IsChargingDash => isChargingDash;
 
     private Rigidbody2D rb;
     private AudioSource somQueda;
