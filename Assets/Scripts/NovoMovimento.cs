@@ -7,6 +7,7 @@ public class NovoMovimento : MonoBehaviour
     public float moveSpeed;
     public Transform groundCheck;
     public float ImpulseTimer;
+    public float gunkImpulseTimer = 0.8f;
     public float ImpulseForce;
     public LayerMask groundLayer;
     public LayerMask rampLayer;
@@ -16,6 +17,7 @@ public class NovoMovimento : MonoBehaviour
     private BoxCollider2D groundCheckCollider;
     private bool isGrounded;
     private bool isChargingJump = false;
+    private float currentJumpChargeTimer = 0f;
     private float initialImpulseTimer;
 
     [Header("Input")]
@@ -428,8 +430,8 @@ public class NovoMovimento : MonoBehaviour
         // Charging jump while input is held
         if (isChargingJump)
         {
-            ImpulseTimer -= Time.deltaTime;
-            if (ImpulseTimer <= 0f)
+            currentJumpChargeTimer -= Time.deltaTime;
+            if (currentJumpChargeTimer <= 0f)
             {
                 isChargingJump = false;
                 Jump();
@@ -544,6 +546,7 @@ public class NovoMovimento : MonoBehaviour
         {
             print("Jump Pressed!");
             isChargingJump = true; // start charging
+            currentJumpChargeTimer = isInGunk ? gunkImpulseTimer : ImpulseTimer;
             holdPlayedThisCharge = false; // allow hold animation to play once for this charge
             dashesRemaining = maxAirDashes; // Reset dashes on jump
             airStateStartTime = Time.time; // Dash immediately available when jumping
@@ -567,11 +570,12 @@ public class NovoMovimento : MonoBehaviour
     void Jump()
     {
         DisableMovement(); // Desativa o movimento horizontal durante o salto
-        ImpulseTimer = ImpulseTimer + 1f;
-        print("Jumped! Impulse: " + (ImpulseForce / ImpulseTimer));
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, ImpulseForce / ImpulseTimer); // Aplica a força do salto
+        float jumpChargeDivisor = Mathf.Max(1f, currentJumpChargeTimer + 1f);
+        print("Jumped! Impulse: " + (ImpulseForce / jumpChargeDivisor));
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, ImpulseForce / jumpChargeDivisor); // Aplica a força do salto
         // Reset hold-play flag so next charge can play hold animation once
         holdPlayedThisCharge = false;
+        currentJumpChargeTimer = 0f;
     }
 
     #region Dash / Mid-Air Boost
