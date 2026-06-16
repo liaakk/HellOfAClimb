@@ -238,6 +238,68 @@ public class NPCDialogue : MonoBehaviour
                 //diálogo glashy
             };
         }
+        else if (npcName == "Mourchild")
+        {
+            lines = new string[]
+            {
+                "You climb still.",
+                "Even now.",
+                "Even after countless falls, after all the heights you have crossed.",
+                "You climb as you once did in life.",
+                "You remember fragments, yet not the shape they formed.",
+                "Allow me to show you.",
+                "There was a time when your hands knew only kindness.",
+                "Thread and cloth became routine.",
+                "Wood and paint became familiar.",
+                "Children who possessed nothing held your creations as treasures, and through them you found purpose.",
+                "It was a noble summit.",
+                "Yet summits are curious places.",
+                "The higher one rises, the harder it becomes to see the ground below.",
+                "Your gifts became sought after.",
+                "The humble table became a workshop.",
+                "The workshop became a store.",
+                "The store became an enterprise.",
+                "And with every step upward, you assured yourself you remained where you had begun.",
+                "After all, dolls were still being made.",
+                "Children were still smiling.",
+                "The shape had changed, but the purpose had not.",
+                "Or so you believed.",
+                "But a path does not remain the same merely because it carries the same name.",
+                "Beyond your sight, other hands began stitching your toys.",
+                "Smaller hands.",
+                "Hungrier hands.",
+                "Hands that should have been holding the very gifts they were forced to create.",
+                "You saw enough to wonder.",
+                "Enough to ask.",
+                "Enough to know.",
+                "Yet certainty would have demanded a choice.",
+                "And so you wrapped yourself in doubt.",
+                "You called it caution.",
+                "You called it necessity.",
+                "You called it ignorance.",
+                "But ignorance is not blindness.",
+                "It is the act of closing one's eyes.",
+                "You climbed, and others bore the weight of your ascent.",
+                "Not because you wished them harm.",
+                "That would have been simpler.",
+                "No.",
+                "You merely wished to keep climbing.",
+                "And that desire proved heavier than the suffering below.",
+                "That is why you awoke in the depths.",
+                "Not for the good you performed.",
+                "Not for the success you achieved.",
+                "But for the truth you refused to carry.",
+                "In life, you turned away from it.",
+                "Yet truths are patient.",
+                "They do not fade.",
+                "Now, you find yourself at its edge.",
+                "At the threshold between descent and ascent.",
+                "The burden has been returned to your hands.",
+                "No doubt remains to shelter you.",
+                "This is the weight you sought to leave behind.",
+                "Now, it is yours to bear."
+            };
+        }
     }
 
     //DISTÂNCIA DO NPC AO PLAYER
