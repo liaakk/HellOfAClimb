@@ -5,15 +5,16 @@ using TMPro;
 
 public class NPCDialogue : MonoBehaviour
 {
+    [Header("Animações")]
     public Animator animator; //para controlar animações do NPC
     public string talkState = "SadimTalk"; // state name to play while talking
     public string idleState = "SadimIdle"; // optional state to return to when dialogue ends
-    //SOBRE O NPC
+    
+    [Header("Falas NPC")]
     public string[] lines; //falas do NPC
     private int index = 0; //controlo da fala atual
     public string npcName; //nome do NPC para definir falas específicas
 
-    //SOBRE O TEXTO
     public GameObject speechBubble;
     public TMP_Text speechText;
     public float typingSpeed = 0.05f; //velocidade do efeito typing
@@ -27,19 +28,22 @@ public class NPCDialogue : MonoBehaviour
     private bool dialogueActive = false;
     private bool hasAutoStartedOnce = false;
 
-    //HINT (TECLA E)
-    public GameObject hintText;
-    private bool hasPressedE = false;
-
-    //DISTÂNCIA DO PLAYER AO NPC
+    [Header("Interação com Player")]
     public Transform player;
     public float interactionDistanceX;
     public float interactionDistanceY;
 
+    [Header("Hint Text (opcional)")]
+    public GameObject hintText;
+    private bool hasPressedE = false;
+
     void Start()
     {
         speechBubble.SetActive(false);
-        hintText.SetActive(false);
+
+        if (hintText != null){
+            hintText.SetActive(false);
+        }
         //o botão começa invisível
 
         SetupDialogueByName();
@@ -60,7 +64,9 @@ public class NPCDialogue : MonoBehaviour
         if (!dialogueActive && isNear && Keyboard.current.eKey.wasPressedThisFrame)
         {
             hasPressedE = true;
-            hintText.SetActive(false);
+            if (hintText != null){
+                hintText.SetActive(false);
+            }
             StartDialogue();
         }
 
@@ -76,7 +82,9 @@ public class NPCDialogue : MonoBehaviour
            if (!hasPressedE)
             {
                 hasPressedE = true;
-                hintText.SetActive(false);
+                if (hintText != null){
+                    hintText.SetActive(false);
+                }
             }
 
             if (isTyping)
@@ -93,14 +101,16 @@ public class NPCDialogue : MonoBehaviour
         }
 
         // hint aparece quando está perto e ainda não pressionou E neste ciclo
-        if (isNear && !hasPressedE)
-            {
-                hintText.SetActive(true);
-            }
-        else
-            {
-                hintText.SetActive(false);
-            }
+        if (hintText != null){
+            if (isNear && !hasPressedE)
+                {
+                    hintText.SetActive(true);
+                }
+            else
+                {
+                    hintText.SetActive(false);
+                }
+        }
     }
 
     public void StartDialogue() //INICIA DIÁLOGO
@@ -132,7 +142,9 @@ public class NPCDialogue : MonoBehaviour
 
         isTyping = false;
         speechBubble.SetActive(false);
-        hintText.SetActive(false);
+        if (hintText != null){
+            hintText.SetActive(false);
+        }
         dialogueActive = false;
         hasPressedE = false;
 
@@ -210,6 +222,20 @@ public class NPCDialogue : MonoBehaviour
                 "I want to look at myself one last time",
                 "But I cannot see...",
                 "I cannot see, as Greed has blinded me"
+            };
+        }
+        else if (npcName == "Shrew")
+        {
+            lines = new string[]
+            {
+                //diálogo shrew
+            };
+        }
+        else if (npcName == "Glashy")
+        {
+            lines = new string[]
+            {
+                //diálogo glashy
             };
         }
     }
