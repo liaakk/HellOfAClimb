@@ -106,7 +106,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -120,7 +120,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -141,9 +141,9 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 8192
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -165,533 +165,546 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IMG_2185_0
+      name: UIBook_0
       rect:
         serializedVersion: 2
-        x: 45
+        x: 0
         y: 0
-        width: 47
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c9d7ee41c0715d2f0800000000000000
-      internalID: -948826805833400932
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_1
-      rect:
-        serializedVersion: 2
-        x: 138
-        y: 0
-        width: 47
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 97dcdff87ff4254b0800000000000000
-      internalID: -5453208274100957831
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_2
-      rect:
-        serializedVersion: 2
-        x: 231
-        y: 0
-        width: 47
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5bf80a113de79efd0800000000000000
-      internalID: -2312177488679104587
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_3
-      rect:
-        serializedVersion: 2
-        x: 324
-        y: 0
-        width: 47
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d07d7fbe90601b230800000000000000
-      internalID: 3652707412457543437
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_4
-      rect:
-        serializedVersion: 2
-        x: 417
-        y: 0
-        width: 47
-        height: 65
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d84bd10fe27b4f6a0800000000000000
-      internalID: -6416302156871256947
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_5
-      rect:
-        serializedVersion: 2
-        x: 510
-        y: 0
-        width: 47
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 00b6e53fd042434d0800000000000000
-      internalID: -3155857796543649024
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_6
-      rect:
-        serializedVersion: 2
-        x: 601
-        y: 0
-        width: 49
-        height: 65
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d25ff8cc780439440800000000000000
-      internalID: 4941364168152315181
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_7
-      rect:
-        serializedVersion: 2
-        x: 686
-        y: 0
-        width: 57
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 47e6920c2af57acc0800000000000000
-      internalID: -3699883416248291724
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_8
-      rect:
-        serializedVersion: 2
-        x: 775
-        y: 0
-        width: 61
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 93ef2e9c96ad65a60800000000000000
-      internalID: 7662551963910995513
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_9
-      rect:
-        serializedVersion: 2
-        x: 853
-        y: 0
-        width: 76
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a66fb8d71d34837b0800000000000000
-      internalID: -5244367199039392150
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_10
-      rect:
-        serializedVersion: 2
-        x: 931
-        y: 0
-        width: 91
+        width: 93
         height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ff2189ea0890fbbd0800000000000000
-      internalID: -2612358810561932545
+      spriteID: db0fdde6d80b7054da5dff1ec6f28314
+      internalID: 28137977
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_11
+      name: UIBook_1
       rect:
         serializedVersion: 2
-        x: 1024
+        x: 93
         y: 0
-        width: 91
+        width: 93
         height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 0531911e5815d2c30800000000000000
-      internalID: 4336211651676672848
+      spriteID: 9891f8794d1735b4d8604d92ee1ac21f
+      internalID: -1252692658
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_12
+      name: UIBook_2
       rect:
         serializedVersion: 2
-        x: 1117
+        x: 186
         y: 0
-        width: 91
-        height: 68
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 60ee0725e47dd5a30800000000000000
-      internalID: 4205754358424464902
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_13
-      rect:
-        serializedVersion: 2
-        x: 1210
-        y: 0
-        width: 91
-        height: 67
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c90932c21a3bc9120800000000000000
-      internalID: 2422008204430119068
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_14
-      rect:
-        serializedVersion: 2
-        x: 1303
-        y: 0
-        width: 91
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ffc4425345ce27730800000000000000
-      internalID: 3995515665844030719
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IMG_2185_15
-      rect:
-        serializedVersion: 2
-        x: 1396
-        y: 0
-        width: 91
+        width: 93
         height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: de2b9ad136930da50800000000000000
-      internalID: 6543793356431536877
+      spriteID: 9d439cf3e04128442805e325e85ef08a
+      internalID: 1727670951
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_16
+      name: UIBook_3
       rect:
         serializedVersion: 2
-        x: 1489
+        x: 279
         y: 0
-        width: 91
-        height: 68
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ff8b676c3b08f75f0800000000000000
-      internalID: -756744702757783297
+      spriteID: 73354e134dc5cb4469f93c9eb644340b
+      internalID: -1429665622
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_17
+      name: UIBook_4
       rect:
         serializedVersion: 2
-        x: 1582
+        x: 372
         y: 0
-        width: 91
-        height: 67
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4876da1d4ec1a7af0800000000000000
-      internalID: -397973847972943996
+      spriteID: 7e46c6cf8c167fc49808f046bbe96911
+      internalID: -1827904899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_18
+      name: UIBook_5
       rect:
         serializedVersion: 2
-        x: 1675
+        x: 465
         y: 0
-        width: 91
-        height: 63
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c5339f10f7c227ea0800000000000000
-      internalID: -5876585639759498404
+      spriteID: edf377f556f5c1a498a52c8a8ec6c2c0
+      internalID: 499430302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_19
+      name: UIBook_6
       rect:
         serializedVersion: 2
-        x: 1768
+        x: 558
         y: 0
-        width: 91
-        height: 63
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dfab50889657b1470800000000000000
-      internalID: 8366409828884921085
+      spriteID: 751292b1315e09d48877c093ed8ce839
+      internalID: 1440670990
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_20
+      name: UIBook_7
       rect:
         serializedVersion: 2
-        x: 1876
+        x: 651
         y: 0
-        width: 76
-        height: 64
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 27188cc3e45f11760800000000000000
-      internalID: 7426986976886686066
+      spriteID: ccbf73bd588824e4991b1fb04c09594c
+      internalID: -1359128152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_21
+      name: UIBook_8
       rect:
         serializedVersion: 2
-        x: 1988
+        x: 744
         y: 0
-        width: 57
-        height: 64
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 833dcf0a8a4a7d790800000000000000
-      internalID: -7505349209827257544
+      spriteID: 2d4f8d7cbf39e794685e36a989a0a1b2
+      internalID: 187441479
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_22
+      name: UIBook_9
       rect:
         serializedVersion: 2
-        x: 2091
+        x: 837
         y: 0
-        width: 47
-        height: 64
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 83029d9467c7c54c0800000000000000
-      internalID: -4297423096931344328
+      spriteID: ff4f00d983c31f640a70198c7ea43729
+      internalID: 1836540996
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IMG_2185_23
+      name: UIBook_10
       rect:
         serializedVersion: 2
-        x: 2184
+        x: 930
         y: 0
-        width: 48
-        height: 63
+        width: 93
+        height: 70
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b18cb42e03886d770800000000000000
-      internalID: 8635239079065929755
+      spriteID: 2ea51370b6eaed44e97c088b4775804f
+      internalID: 822214163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_11
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51311c9847eecd64e8d9adb7839a4fea
+      internalID: 1709279579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_12
+      rect:
+        serializedVersion: 2
+        x: 1116
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fab1dd26b3ec4ef42a740e301930475f
+      internalID: -1673365885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_13
+      rect:
+        serializedVersion: 2
+        x: 1209
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fb5d3ec00b8f574493c96b22bfc6504
+      internalID: -1812948174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_14
+      rect:
+        serializedVersion: 2
+        x: 1302
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c54b970806008d4788d8e8d44f3ea92
+      internalID: -1401256641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_15
+      rect:
+        serializedVersion: 2
+        x: 1395
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3010c429f56766c4b998ad8ee709c122
+      internalID: 1338318553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_16
+      rect:
+        serializedVersion: 2
+        x: 1488
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4612d614db0534458b68ce47c6c9dfb
+      internalID: -1531572655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_17
+      rect:
+        serializedVersion: 2
+        x: 1581
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f33e3ba761502f489c32d4c7d3b89a1
+      internalID: 677492096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_18
+      rect:
+        serializedVersion: 2
+        x: 1674
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e8353db7657863418e3ef50c1f3a0ba
+      internalID: 1898333624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_19
+      rect:
+        serializedVersion: 2
+        x: 1767
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cce4d604ec696f247953142a75f42c90
+      internalID: 1858166798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_20
+      rect:
+        serializedVersion: 2
+        x: 1860
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a732b236336b5b409f7d1c8be40379b
+      internalID: 1392668451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_21
+      rect:
+        serializedVersion: 2
+        x: 1953
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77a11491831ca424e85d3b432daba1e8
+      internalID: -1591043817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_22
+      rect:
+        serializedVersion: 2
+        x: 2046
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da8cf934f51fa82448c0b83f7589fd2c
+      internalID: -1994536571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBook_23
+      rect:
+        serializedVersion: 2
+        x: 2139
+        y: 0
+        width: 93
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf2cf47f2b3abad4989f3f94cd4990d3
+      internalID: -2084827012
       vertices: []
       indices: 
       edges: []
@@ -700,7 +713,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 46270c2b377a7fd4ca1100e1bc6fc7e1
     internalID: 0
     vertices: []
     indices: 
@@ -708,32 +721,34 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":24.0,"y":1.0},"gridSpriteSize":{"x":93.0,"y":70.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      IMG_2185_0: -948826805833400932
-      IMG_2185_1: -5453208274100957831
-      IMG_2185_10: -2612358810561932545
-      IMG_2185_11: 4336211651676672848
-      IMG_2185_12: 4205754358424464902
-      IMG_2185_13: 2422008204430119068
-      IMG_2185_14: 3995515665844030719
-      IMG_2185_15: 6543793356431536877
-      IMG_2185_16: -756744702757783297
-      IMG_2185_17: -397973847972943996
-      IMG_2185_18: -5876585639759498404
-      IMG_2185_19: 8366409828884921085
-      IMG_2185_2: -2312177488679104587
-      IMG_2185_20: 7426986976886686066
-      IMG_2185_21: -7505349209827257544
-      IMG_2185_22: -4297423096931344328
-      IMG_2185_23: 8635239079065929755
-      IMG_2185_3: 3652707412457543437
-      IMG_2185_4: -6416302156871256947
-      IMG_2185_5: -3155857796543649024
-      IMG_2185_6: 4941364168152315181
-      IMG_2185_7: -3699883416248291724
-      IMG_2185_8: 7662551963910995513
-      IMG_2185_9: -5244367199039392150
+      UIBook_0: 28137977
+      UIBook_1: -1252692658
+      UIBook_10: 822214163
+      UIBook_11: 1709279579
+      UIBook_12: -1673365885
+      UIBook_13: -1812948174
+      UIBook_14: -1401256641
+      UIBook_15: 1338318553
+      UIBook_16: -1531572655
+      UIBook_17: 677492096
+      UIBook_18: 1898333624
+      UIBook_19: 1858166798
+      UIBook_2: 1727670951
+      UIBook_20: 1392668451
+      UIBook_21: -1591043817
+      UIBook_22: -1994536571
+      UIBook_23: -2084827012
+      UIBook_3: -1429665622
+      UIBook_4: -1827904899
+      UIBook_5: 499430302
+      UIBook_6: 1440670990
+      UIBook_7: -1359128152
+      UIBook_8: 187441479
+      UIBook_9: 1836540996
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
