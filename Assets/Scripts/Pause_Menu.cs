@@ -1,50 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
-public class PauseMenu : MonoBehaviour
+public class Pause_Menu : MonoBehaviour
 {
-    public GameObject pauseMenu;
-    bool isPaused = false;
-
-    void Start()
-{
-    pauseMenu.SetActive(false); // começa escondido
-}
+    public GameObject pausePanel;
 
     void Update()
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (isPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
+            pausePanel.SetActive(true);
         }
     }
-
-    void Pause()
-    {
-        pauseMenu.SetActive(true);
-        Time.timeScale = 0f;
-        isPaused = true;
-    }
-
-    public void Resume()
-    {
-        pauseMenu.SetActive(false);
-        Time.timeScale = 1f;
-        isPaused = false;
-    }
-
-    public void LoadMainMenu()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
-    }
-    
 }
