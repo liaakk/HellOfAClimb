@@ -36,7 +36,7 @@ public class NotebookTabs : MonoBehaviour
 
     public void ShowCharacters()
     {
-         Debug.Log("CLICK CHARACTERS FUNCIONA");
+        Debug.Log("CLICK CHARACTERS FUNCIONA");
         SetPages(false, true, false);
         SetButtons(charactersButton);
     }

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CollectButton : MonoBehaviour
 {
+    public NotebookData notebookData;
     private bool collected = false;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -13,6 +14,7 @@ public class CollectButton : MonoBehaviour
             collected = true;
 
             UIButtonsManager.Instance.AddButton();
+            Notebook.Instance.UnlockMemory(notebookData);
 
             Destroy(gameObject);
         }

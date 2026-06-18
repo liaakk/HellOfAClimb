@@ -27,6 +27,11 @@ public class NPCDialogue : MonoBehaviour
     //ESTADO DO DIÁLOGO
     private bool dialogueActive = false;
     private bool hasAutoStartedOnce = false;
+    
+    //MEMÓRIA NA CADERNETA
+    [Header("Notebook")]
+    public NotebookData notebookData;
+    private bool addedToNotebook = false;
 
     [Header("Interação com Player")]
     public Transform player;
@@ -115,6 +120,12 @@ public class NPCDialogue : MonoBehaviour
 
     public void StartDialogue() //INICIA DIÁLOGO
     {
+        if(!addedToNotebook)
+        {
+            addedToNotebook = true;
+            Notebook.Instance.UnlockNPC(notebookData);
+        }
+
         if (dialogueActive) return;
 
         speechBubble.SetActive(true);
