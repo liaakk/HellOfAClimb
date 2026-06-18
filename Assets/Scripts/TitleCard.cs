@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.InputSystem;
 
@@ -20,12 +21,22 @@ public class TitleCardController : MonoBehaviour
     public float fadeOutTime = 1f;
 
     private bool triggered = false;
+    private Image subtitleImage;
 
     private void Start()
     {
         if (immediateTitleGroup == null || delayedTitleGroup == null)
         {
             Debug.LogError("TitleCardController: Assign both title CanvasGroup references in the Inspector.");
+            enabled = false;
+            return;
+        }
+
+        subtitleImage = delayedTitleGroup.GetComponent<Image>();
+
+        if (subtitleImage == null)
+        {
+            Debug.LogError("TitleCardController: The delayed title group must have an Image component for the subtitle.");
             enabled = false;
             return;
         }
@@ -68,6 +79,21 @@ public class TitleCardController : MonoBehaviour
 
         return false;
     }
+
+    public void ShowTitleWithSubtitle(Sprite newSubtitle)
+{
+    if (newSubtitle == null)
+        return;
+
+    subtitleImage.sprite = newSubtitle;
+
+    StopAllCoroutines();
+
+    immediateTitleGroup.alpha = 0f;
+    delayedTitleGroup.alpha = 0f;
+
+    StartCoroutine(PlayTitleSequence());
+}
 
     private IEnumerator PlayTitleSequence()
     {
