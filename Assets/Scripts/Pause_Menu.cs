@@ -1,6 +1,6 @@
-
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class Pause_Menu : MonoBehaviour
 {
@@ -27,5 +27,11 @@ public class Pause_Menu : MonoBehaviour
         pausePanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
+    }
+
+    public void SaveAndExit()
+    {
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene("MainMenu");
     }
 }
