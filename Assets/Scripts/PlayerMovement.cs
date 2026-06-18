@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveDeadZone = 0.1f;
 
     private Rigidbody2D body;
+    private float externalWindX;
 
     
 
@@ -93,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
         // Só move se está no chão E não está a fazer boost
         if (IsGrounded() && !isDashing)
         {
-            body.linearVelocity = new Vector2(horizontalInput * moveSpeed, body.linearVelocity.y);
+            body.linearVelocity = new Vector2(horizontalInput * moveSpeed + externalWindX, body.linearVelocity.y);
             hasUsedDashThisJump = false; // reseta quando toca no chão (pronto pro próximo salto)
         }
 
@@ -182,6 +183,15 @@ public class PlayerMovement : MonoBehaviour
         dashTimer = dashTime; // reseta o timer
         dashDirection = Mathf.Sign(dir); 
         hasUsedDashThisJump = true; // marca como usado (impede mudar de direção)
+    }
+
+    public bool IsJumpCharging => isJumping;
+
+    public bool IsGroundedNow => IsGrounded();
+
+    public void SetExternalWindX(float windX)
+    {
+        externalWindX = windX;
     }
 
     // ==============================================================

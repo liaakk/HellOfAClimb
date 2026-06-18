@@ -105,10 +105,11 @@ public class NovoMovimento : MonoBehaviour
     private bool wasGroundedDebugLastFrame = false;
     private Collider2D lastSlopeHitCollider = null;
     private readonly ContactPoint2D[] groundContacts = new ContactPoint2D[16];
+    private float externalWindX = 0f;
 
     private LayerMask GroundAndRampMask => groundLayer | rampLayer;
     private LayerMask RampOnlyMask => rampLayer;
-    private bool IsSupported => isGrounded || isOnRamp;
+    public bool IsSupported => isGrounded || isOnRamp;
 
     [Header("Queda")]
     [SerializeField] private float fallMultiplier = 2f; // descida: quanto mais rápido cai
@@ -127,7 +128,6 @@ public class NovoMovimento : MonoBehaviour
     [Tooltip("Vertical velocity threshold (absolute) used to detect a big fall on landing.")]
     public float bigFallVelocityThreshold = 10f;
     [SerializeField] private float moveDeadZone = 0.1f;
-
     // Special animation state control
     private bool isInSpecialAnimation = false; // when true, normal movement/animations are locked
     private bool isInKnocked = false;
@@ -193,6 +193,11 @@ public class NovoMovimento : MonoBehaviour
 
         // Disable movement for the first 2 seconds after game start
         StartCoroutine(EnableMovementAfterDelay(2f));
+    }
+
+    public void SetExternalWindX(float windX)
+    {
+        externalWindX = windX;
     }
 
     void Update()
@@ -385,23 +390,23 @@ public class NovoMovimento : MonoBehaviour
                 if (canClimbWithDash)
                 {
                     float climbSpeed = lastDashBoostMagnitude * dashClimbStrengthFactor * Mathf.Max(0.25f, slopeSteepness);
-                    rb.linearVelocity = uphillDirection * Mathf.Max(uphillSpeed, climbSpeed);
+                    rb.linearVelocity = uphillDirection * Mathf.Max(uphillSpeed, climbSpeed) + Vector2.right * externalWindX;
                 }
                 else if (uphillSpeed > 0f)
                 {
                     float decayedUphillSpeed = Mathf.MoveTowards(uphillSpeed, 0f, slopeClimbDecaySpeed * Time.deltaTime);
                     if (decayedUphillSpeed > 0f)
                     {
-                        rb.linearVelocity = uphillDirection * decayedUphillSpeed;
+                        rb.linearVelocity = uphillDirection * decayedUphillSpeed + Vector2.right * externalWindX;
                     }
                     else
                     {
-                        rb.linearVelocity = downhillDirection * targetDownhillSpeed;
+                        rb.linearVelocity = downhillDirection * targetDownhillSpeed + Vector2.right * externalWindX;
                     }
                 }
                 else
                 {
-                    rb.linearVelocity = downhillDirection * targetDownhillSpeed;
+                    rb.linearVelocity = downhillDirection * targetDownhillSpeed + Vector2.right * externalWindX;
                 }
 
                 lastSlopeMomentumX = rb.linearVelocity.x;
@@ -416,14 +421,14 @@ public class NovoMovimento : MonoBehaviour
                     // Blend input movement with landing momentum (momentum gradually decays)
                     float momentumBlend = Mathf.Clamp01(landingMomentumDecayTimer / landingMomentumDecayTime);
                     moveVelocity += landingMomentumX * momentumBlend;
-                    rb.linearVelocity = new Vector2(moveVelocity, rb.linearVelocity.y);
+                    rb.linearVelocity = new Vector2(moveVelocity + externalWindX, rb.linearVelocity.y);
                 }
                 else if (!isChargingDash)
                 {
                     // Maintain momentum while no input
                     float momentumBlend = Mathf.Clamp01(landingMomentumDecayTimer / landingMomentumDecayTime);
                     float momentumVelocity = landingMomentumX * momentumBlend;
-                    rb.linearVelocity = new Vector2(momentumVelocity, rb.linearVelocity.y);
+                    rb.linearVelocity = new Vector2(momentumVelocity + externalWindX, rb.linearVelocity.y);
                 }
             }
         }
