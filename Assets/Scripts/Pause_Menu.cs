@@ -7,6 +7,11 @@ public class PauseMenu : MonoBehaviour
     public GameObject pauseMenu;
     bool isPaused = false;
 
+    void Start()
+{
+    pauseMenu.SetActive(false); // começa escondido
+}
+
     void Update()
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
