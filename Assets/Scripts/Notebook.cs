@@ -29,7 +29,11 @@ public class Notebook : MonoBehaviour
     public NotebookSlot[] objectSlots;
     public NotebookSlot[] memorySlots;
 
+    [Header("Player")]
+    public NovoMovimento playerMovement;
+
     private bool isOpen = false;
+    private int currentPage = 0;
 
     private List<NotebookData> unlockedNPCs = new();
     private List<NotebookData> unlockedObjects = new();
@@ -57,10 +61,37 @@ public class Notebook : MonoBehaviour
 
     void Update()
     {
+        if (isOpen)
+        {
+            if (Keyboard.current.rightArrowKey.wasPressedThisFrame ||
+                Keyboard.current.dKey.wasPressedThisFrame)
+            {
+                currentPage++;
+
+                if (currentPage > 2)
+                    currentPage = 0;
+
+                UpdatePage();
+            }
+
+            if (Keyboard.current.leftArrowKey.wasPressedThisFrame ||
+                Keyboard.current.aKey.wasPressedThisFrame)
+            {
+                currentPage--;
+
+                if (currentPage < 0)
+                    currentPage = 2;
+
+                UpdatePage();
+            }
+        }
+
         if (Keyboard.current.yKey.wasPressedThisFrame)
         {
             isOpen = !isOpen;
             notebookPanel.SetActive(isOpen);
+            if (playerMovement != null)
+                playerMovement.enabled = !isOpen;
         }
     }
 
@@ -140,20 +171,21 @@ public class Notebook : MonoBehaviour
     // BOTÕES
     public void ShowObjects()
     {
+        currentPage = 0;
         SetPages(true, false, false);
         SetButtons(objectsButton);
-        Debug.Log("CLICK OBJECTS");
     }
 
     public void ShowCharacters()
     {
+        currentPage = 1;
         SetPages(false, true, false);
         SetButtons(charactersButton);
-        Debug.Log("CLICK CHARACTERS");
     }
 
     public void ShowCutscenes()
     {
+        currentPage = 2;
         SetPages(false, false, true);
         SetButtons(cutscenesButton);
     }
@@ -172,5 +204,23 @@ public class Notebook : MonoBehaviour
         cutscenesButton.color = normalColor;
 
         activeButton.color = selectedColor;
+    }
+
+    void UpdatePage()
+    {
+        switch (currentPage)
+        {
+            case 0:
+                ShowObjects();
+                break;
+
+            case 1:
+                ShowCharacters();
+                break;
+
+            case 2:
+                ShowCutscenes();
+                break;
+        }
     }
 }
