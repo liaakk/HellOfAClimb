@@ -8,6 +8,8 @@ public class Wind : MonoBehaviour
     [SerializeField] private float airWindForce = 8f;
     [SerializeField] private float groundWindForce = 5f;
     [SerializeField] private float chargingWindForce = 3f;
+    [SerializeField] private float chargingDashWindForce = 2f;
+    [SerializeField] private float dashWindForce = 1f;
     [SerializeField] private float windDuration = 4f;
     [SerializeField] private float noWindDuration = 4f;
     [SerializeField] private bool startBlowingRight = true;
@@ -68,21 +70,10 @@ public class Wind : MonoBehaviour
 
             float windVelocityX = GetWindForceForBody(body);
 
-            PlayerMovement playerMovement = body.GetComponent<PlayerMovement>();
-            if (playerMovement != null)
-            {
-                playerMovement.SetExternalWindX(windVelocityX);
-            }
-
             NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
             if (novoMovimento != null)
             {
                 novoMovimento.SetExternalWindX(windVelocityX);
-            }
-
-            if (IsWindActivePhase() && playerMovement == null && novoMovimento == null)
-            {
-                body.AddForce(Vector2.right * windVelocityX, ForceMode2D.Force);
             }
         }
     }
@@ -101,12 +92,6 @@ public class Wind : MonoBehaviour
         Rigidbody2D body = other.attachedRigidbody;
         if (body != null)
         {
-            PlayerMovement playerMovement = body.GetComponent<PlayerMovement>();
-            if (playerMovement != null)
-            {
-                playerMovement.SetExternalWindX(0f);
-            }
-
             NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
             if (novoMovimento != null)
             {
@@ -131,34 +116,32 @@ public class Wind : MonoBehaviour
 
         float force = groundWindForce;
 
-        PlayerMovement playerMovement = body.GetComponent<PlayerMovement>();
-        if (playerMovement != null)
+        NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
+        if (novoMovimento != null)
         {
-            if (playerMovement.IsJumpCharging)
+            if (!novoMovimento.IsGrounded)
             {
-                force = chargingWindForce;
-            }
-            else if (!playerMovement.IsGroundedNow)
-            {
+                print("airborne WIND");
                 force = airWindForce;
             }
-        }
-        else
-        {
-            NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
-            if (novoMovimento != null)
+            else if (novoMovimento.IsChargingJump)
             {
-                if (novoMovimento.IsChargingJump)
-                {
-                    force = chargingWindForce;
-                }
-                else if (!novoMovimento.IsSupported)
-                {
-                    force = airWindForce;
-                }
+                print("charging jump WIND");
+                force = chargingWindForce;
             }
+            else if (novoMovimento.IsChargingDash)
+            {
+                //funciona
+                print("charging dash WIND");
+                force = chargingDashWindForce;
+            }
+            else if (novoMovimento.DashesRemaining == 0)
+            {
+                print("dash boost WIND");
+                force = dashWindForce;
+            }
+            
         }
-
         return currentDirection * force;
     }
 

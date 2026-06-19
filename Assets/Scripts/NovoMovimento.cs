@@ -12,6 +12,8 @@ public class NovoMovimento : MonoBehaviour
     public LayerMask rampLayer;
     public bool IsChargingJump => isChargingJump;
     public bool IsChargingDash => isChargingDash;
+    public float DashesRemaining => dashesRemaining;
+    public bool IsGrounded => isGrounded;
 
     private Rigidbody2D rb;
     private AudioSource somQueda;

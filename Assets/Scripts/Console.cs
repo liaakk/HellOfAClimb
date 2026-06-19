@@ -169,13 +169,17 @@ public class DeveloperConsole : MonoBehaviour
 
         commands.Add("help", HelpCommand);
         commands.Add("set_timescale", SetTimeScaleCommand);
-        commands.Add("dev2", TPGluttony);
         commands.Add("dev1.5", args => TeleportPlayer(new Vector2(-6.5f, 35f), "dev1.5"));
         commands.Add("dev1.8", args => TeleportPlayer(new Vector2(-0.5f, 55f), "dev1.8"));
+        commands.Add("dev2", args => TeleportPlayer(new Vector2(0f, 72f), "dev2"));
+        commands.Add("dev2.0", args => TeleportPlayer(new Vector2(0f, 72f), "dev2.0"));
         commands.Add("dev2.2", args => TeleportPlayer(new Vector2(1.8f, 93f), "dev2.2"));
         commands.Add("dev2.5", args => TeleportPlayer(new Vector2(1.99f, 110f), "dev2.5"));
         commands.Add("dev2.8", args => TeleportPlayer(new Vector2(-9.2f, 140f), "dev2.8"));
+        commands.Add("dev3", args => TeleportPlayer(new Vector2(-3.5f, 169f), "dev3"));
+        commands.Add("dev3.0", args => TeleportPlayer(new Vector2(-3.5f, 169f), "dev3.0"));
         commands.Add("dev3.2", args => TeleportPlayer(new Vector2(-10f, 192f), "dev3.2"));
+        commands.Add("dev3.4", args => TeleportPlayer(new Vector2(-2.5f, 219f), "dev3.4"));
     }
 
     void ProcessCommand(string command)
@@ -221,11 +225,6 @@ public class DeveloperConsole : MonoBehaviour
         {
             AppendOutput("Usage: set_timescale <value>");
         }
-    }
-
-    void TPGluttony(string[] args)
-    {
-        TeleportPlayer(new Vector2(0f, 72f), "Gluttony");
     }
 
     void TeleportPlayer(Vector2 position, string label)
