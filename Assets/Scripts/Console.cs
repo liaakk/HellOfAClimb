@@ -180,6 +180,9 @@ public class DeveloperConsole : MonoBehaviour
         commands.Add("dev3.0", args => TeleportPlayer(new Vector2(-3.5f, 169f), "dev3.0"));
         commands.Add("dev3.2", args => TeleportPlayer(new Vector2(-10f, 192f), "dev3.2"));
         commands.Add("dev3.4", args => TeleportPlayer(new Vector2(-2.5f, 219f), "dev3.4"));
+        commands.Add("dev3.8", args => TeleportPlayer(new Vector2(-5f, 271f), "dev3.8"));
+        commands.Add("dev4", args => TeleportPlayer(new Vector2(2.2f, 297f), "dev4"));
+        commands.Add("dev4.0", args => TeleportPlayer(new Vector2(2.2f, 297f), "dev4.0"));
     }
 
     void ProcessCommand(string command)
