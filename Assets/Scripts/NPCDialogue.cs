@@ -118,52 +118,49 @@ public class NPCDialogue : MonoBehaviour
         }
     }
 
-    public void StartDialogue() //INICIA DIÁLOGO
+ public void StartDialogue()
+{
+    if (dialogueActive) return;
+
+    speechBubble.SetActive(true);
+    dialogueActive = true;
+    index = 0;
+
+    if (animator != null && !string.IsNullOrEmpty(talkState))
+        animator.Play(talkState);
+
+    ShowLine();
+}
+
+ public void EndDialogue()
+{
+    if (!dialogueActive) return;
+
+    if (typingCoroutine != null)
     {
-        if(!addedToNotebook)
-        {
-            addedToNotebook = true;
-            Notebook.Instance.UnlockNPC(notebookData);
-        }
-
-        if (dialogueActive) return;
-
-        speechBubble.SetActive(true);
-        dialogueActive = true;
-        index = 0;
-
-        // play talk animation while dialogue is active
-        if (animator != null && !string.IsNullOrEmpty(talkState))
-        {
-            animator.Play(talkState);
-        }
-
-        ShowLine();
+        StopCoroutine(typingCoroutine);
+        typingCoroutine = null;
     }
 
-    public void EndDialogue()
+    isTyping = false;
+    speechBubble.SetActive(false);
+
+    if (hintText != null)
+        hintText.SetActive(false);
+
+    dialogueActive = false;
+    hasPressedE = false;
+
+    if (animator != null && !string.IsNullOrEmpty(idleState))
+        animator.Play(idleState);
+
+    if (npcName == "Sadim" && !addedToNotebook)
     {
-        if (!dialogueActive) return;
-
-        if (typingCoroutine != null)
-        {
-            StopCoroutine(typingCoroutine);
-            typingCoroutine = null;
-        }
-
-        isTyping = false;
-        speechBubble.SetActive(false);
-        if (hintText != null){
-            hintText.SetActive(false);
-        }
-        dialogueActive = false;
-        hasPressedE = false;
-
-        if (animator != null && !string.IsNullOrEmpty(idleState))
-        {
-            animator.Play(idleState);
-        }
+        addedToNotebook = true;
+        Notebook.Instance.UnlockNPC(notebookData);
+        NotebookAnimationController.Instance.PlayAnimation();
     }
+}
 
     void NextLine()
     {
