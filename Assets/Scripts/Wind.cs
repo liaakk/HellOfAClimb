@@ -14,9 +14,9 @@ public class Wind : MonoBehaviour
     [SerializeField] private float noWindDuration = 4f;
     [SerializeField] private bool startBlowingRight = true;
 
-    [Header("Optional VFX")]
-    [SerializeField] private ParticleSystem windParticleSystemRight;
-    [SerializeField] private ParticleSystem windParticleSystemLeft;
+    [Header("Optional VFX Groups")]
+    [SerializeField] private GameObject windObjectsRight;
+    [SerializeField] private GameObject windObjectsLeft;
 
     private readonly HashSet<Rigidbody2D> bodiesInside = new HashSet<Rigidbody2D>();
     private float phaseTimer;
@@ -31,14 +31,10 @@ public class Wind : MonoBehaviour
     private void Awake()
     {
         if (windArea == null)
-        {
             windArea = GetComponent<Collider2D>();
-        }
 
         if (windArea != null)
-        {
             windArea.isTrigger = true;
-        }
 
         currentDirection = startBlowingRight ? 1 : -1;
         ApplyPhaseState();
@@ -49,13 +45,13 @@ public class Wind : MonoBehaviour
         phaseTimer += Time.deltaTime;
 
         float activeDuration = IsWindActivePhase() ? windDuration : noWindDuration;
+
         if (phaseTimer < activeDuration)
-        {
             return;
-        }
 
         phaseTimer = 0f;
         phaseIndex = (phaseIndex + 1) % 4;
+
         ApplyPhaseState();
     }
 
@@ -63,40 +59,33 @@ public class Wind : MonoBehaviour
     {
         foreach (Rigidbody2D body in bodiesInside)
         {
-            if (body == null)
-            {
-                continue;
-            }
+            if (body == null) continue;
 
             float windVelocityX = GetWindForceForBody(body);
 
             NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
             if (novoMovimento != null)
-            {
                 novoMovimento.SetExternalWindX(windVelocityX);
-            }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         Rigidbody2D body = other.attachedRigidbody;
+
         if (body != null)
-        {
             bodiesInside.Add(body);
-        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         Rigidbody2D body = other.attachedRigidbody;
+
         if (body != null)
         {
             NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
             if (novoMovimento != null)
-            {
                 novoMovimento.SetExternalWindX(0f);
-            }
 
             bodiesInside.Remove(body);
         }
@@ -110,73 +99,62 @@ public class Wind : MonoBehaviour
     private float GetWindForceForBody(Rigidbody2D body)
     {
         if (!IsWindActivePhase())
-        {
             return 0f;
-        }
 
         float force = groundWindForce;
 
         NovoMovimento novoMovimento = body.GetComponent<NovoMovimento>();
+
         if (novoMovimento != null)
         {
             if (!novoMovimento.IsGrounded)
-            {
-                print("airborne WIND");
                 force = airWindForce;
-            }
             else if (novoMovimento.IsChargingJump)
-            {
-                print("charging jump WIND");
                 force = chargingWindForce;
-            }
             else if (novoMovimento.IsChargingDash)
-            {
-                //funciona
-                print("charging dash WIND");
                 force = chargingDashWindForce;
-            }
             else if (novoMovimento.DashesRemaining == 0)
-            {
-                print("dash boost WIND");
                 force = dashWindForce;
-            }
-            
         }
+
         return currentDirection * force;
     }
 
     private void ApplyPhaseState()
     {
         if (phaseIndex == 0)
-        {
             currentDirection = startBlowingRight ? 1 : -1;
-        }
         else if (phaseIndex == 2)
-        {
             currentDirection = -currentDirection;
-        }
 
-        ParticleSystem activeParticles = currentDirection == 1 ? windParticleSystemRight : windParticleSystemLeft;
-        ParticleSystem inactiveParticles = currentDirection == 1 ? windParticleSystemLeft : windParticleSystemRight;
+        GameObject activeObjects = currentDirection == 1 ? windObjectsRight : windObjectsLeft;
+        GameObject inactiveObjects = currentDirection == 1 ? windObjectsLeft : windObjectsRight;
 
-        if (IsWindActivePhase())
+        bool windActive = IsWindActivePhase();
+
+        SetParticles(activeObjects, windActive);
+        SetParticles(inactiveObjects, false);
+    }
+
+    private void SetParticles(GameObject obj, bool active)
+    {
+        if (obj == null) return;
+
+        ParticleSystem[] systems = obj.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in systems)
         {
-            if (activeParticles != null && !activeParticles.isPlaying)
+            if (ps == null) continue;
+
+            if (active)
             {
-                activeParticles.Play();
+                if (!ps.isPlaying)
+                    ps.Play();
             }
-        }
-        else
-        {
-            if (activeParticles != null && activeParticles.isPlaying)
+            else
             {
-                activeParticles.Stop();
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
-        }
-
-        if (inactiveParticles != null && inactiveParticles.isPlaying)
-        {
-            inactiveParticles.Stop();
         }
     }
 }
