@@ -169,17 +169,23 @@ public class DeveloperConsole : MonoBehaviour
 
         commands.Add("help", HelpCommand);
         commands.Add("set_timescale", SetTimeScaleCommand);
-        commands.Add("dev1.5", args => TeleportPlayer(new Vector2(-6.5f, 35f), "dev1.5"));
+        commands.Add("dev1", args => TeleportPlayer(new Vector2(-0.5f, -3f), "dev1"));
+        commands.Add("dev1.0", args => TeleportPlayer(new Vector2(-0.5f, -3f), "dev1.0"));
+        commands.Add("dev1.2", args => TeleportPlayer(new Vector2(0f, 23f), "dev1.2"));
+        commands.Add("dev1.4", args => TeleportPlayer(new Vector2(-6.5f, 35f), "dev1.4"));
+        commands.Add("dev1.6", args => TeleportPlayer(new Vector2(2.4f, 44f), "dev1.6"));
         commands.Add("dev1.8", args => TeleportPlayer(new Vector2(-0.5f, 55f), "dev1.8"));
         commands.Add("dev2", args => TeleportPlayer(new Vector2(0f, 72f), "dev2"));
         commands.Add("dev2.0", args => TeleportPlayer(new Vector2(0f, 72f), "dev2.0"));
         commands.Add("dev2.2", args => TeleportPlayer(new Vector2(1.8f, 93f), "dev2.2"));
-        commands.Add("dev2.5", args => TeleportPlayer(new Vector2(1.99f, 110f), "dev2.5"));
+        commands.Add("dev2.4", args => TeleportPlayer(new Vector2(1.99f, 110f), "dev2.4"));
+        commands.Add("dev2.6", args => TeleportPlayer(new Vector2(-4f, 124f), "dev2.6"));
         commands.Add("dev2.8", args => TeleportPlayer(new Vector2(-9.2f, 140f), "dev2.8"));
         commands.Add("dev3", args => TeleportPlayer(new Vector2(-3.5f, 169f), "dev3"));
         commands.Add("dev3.0", args => TeleportPlayer(new Vector2(-3.5f, 169f), "dev3.0"));
         commands.Add("dev3.2", args => TeleportPlayer(new Vector2(-10f, 192f), "dev3.2"));
-        commands.Add("dev3.4", args => TeleportPlayer(new Vector2(-2.5f, 219f), "dev3.4"));
+        commands.Add("dev3.4", args => TeleportPlayer(new Vector2(0f, 220f), "dev3.4"));
+        commands.Add("dev3.6", args => TeleportPlayer(new Vector2(-4.5f, 248f), "dev3.6"));
         commands.Add("dev3.8", args => TeleportPlayer(new Vector2(-5f, 271f), "dev3.8"));
         commands.Add("dev4", args => TeleportPlayer(new Vector2(2.2f, 297f), "dev4"));
         commands.Add("dev4.0", args => TeleportPlayer(new Vector2(2.2f, 297f), "dev4.0"));
