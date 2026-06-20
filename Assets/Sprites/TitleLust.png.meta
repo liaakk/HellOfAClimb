@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: ce70d7d346d4b0a46b200101870be05e
+guid: be8d73dd6353abb46a5c1b6bc7932aec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3194775471233172342
-    second: TitleGluttonyFinal_0
+      213: 3148692330351787113
+    second: TitleLust_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TitleGluttonyFinal_0
+      name: TitleLust_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 398
-        height: 164
+        width: 251
+        height: 149
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6730cfb4d5f165c20800000000000000
-      internalID: 3194775471233172342
+      spriteID: 96c7d91fdf662bb20800000000000000
+      internalID: 3148692330351787113
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6b6096a2363796d43b67554dc689c9f6
+    spriteID: 5752b91113c4f45428b667d896201d1f
     internalID: 0
     vertices: []
     indices: 
@@ -148,9 +148,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":398.0,"y":164.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":251.0,"y":149.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      TitleGluttonyFinal_0: 3194775471233172342
+      TitleLust_0: 3148692330351787113
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
