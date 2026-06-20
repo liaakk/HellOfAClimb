@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -235226904122077337, guid: 69b39dd933fb4054ebfc0a9aa32f6607, type: 3}
-  m_Color: {r: 0.89433956, g: 0.8915128, b: 0.6530366, a: 1}
+  m_Color: {r: 0.94716984, g: 0.9463788, b: 0.8989178, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -127,3 +127,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5515e9ebaede264faf80d52d8f7b29f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SparklesScript
+  notebookData:
+    entryName: 
+    image: {fileID: 0}
+    description: 
+  player: {fileID: 0}
+  interactionDistanceX: 2
+  interactionDistanceY: 2
+  hintText: {fileID: 0}

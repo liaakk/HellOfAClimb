@@ -47,6 +47,7 @@ public class CollectObject : MonoBehaviour
             hintText.SetActive(false);
 
         Notebook.Instance.UnlockObject(notebookData);
+        NotebookAnimationController.Instance.PlayAnimation();
 
         Destroy(gameObject);
     }
