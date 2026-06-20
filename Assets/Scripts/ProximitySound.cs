@@ -4,6 +4,7 @@ public class ProximitySound : MonoBehaviour
 {
     public Transform player;
     public AudioSource audioSource;
+    public float maxVolume = 1f;
 
     public float maxDistance = 10f;
 
@@ -27,8 +28,8 @@ public class ProximitySound : MonoBehaviour
         if (!audioSource.isPlaying)
             audioSource.UnPause();
 
-        float volume = 1 - (distance / maxDistance);
+        float volume = 1f - (distance / maxDistance);
 
-        audioSource.volume = volume;
+        audioSource.volume = Mathf.Clamp01(volume * maxVolume);
     }
 }
