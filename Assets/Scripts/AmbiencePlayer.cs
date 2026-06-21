@@ -6,6 +6,7 @@ public class AmbienceRegion : MonoBehaviour
 {
     [SerializeField] private AudioSource ambienceSource;
     [SerializeField] private float fadeOutTime = 1.5f;
+    [SerializeField] private float maxVolume = 1f;
 
     private Coroutine fadeRoutine;
 
@@ -26,7 +27,7 @@ public class AmbienceRegion : MonoBehaviour
             fadeRoutine = null;
         }
 
-        ambienceSource.volume = 1f;
+        ambienceSource.volume = maxVolume;
 
         if (!ambienceSource.isPlaying)
             ambienceSource.Play();
@@ -63,7 +64,7 @@ public class AmbienceRegion : MonoBehaviour
         }
 
         ambienceSource.Stop();
-        ambienceSource.volume = startVolume;
+        ambienceSource.volume = maxVolume;
     }
 
 }
