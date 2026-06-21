@@ -243,7 +243,18 @@ public class NPCDialogue : MonoBehaviour
         {
             lines = new string[]
             {
-                //dialogo wtv
+                "Do you ever look at yourself...",
+                "Do you ever look at yourself and wonder which part everyone else sees?",
+                "I used to ask that.",
+
+                "The mirrors are kind",
+                "They show me only what I can bear",
+                "What waits beyond them is far less forgiving",
+
+                "I spent a lifetime finding ugliness in others",
+                "It was easier than finding it in myself",
+                "...",
+                "The mirrors know that."
             };
         }
         else if (npcName == "Mourchid")
