@@ -1,10 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Pause_Menu : MonoBehaviour
 {
     public GameObject pausePanel;
+
+    public AudioSource audioSource;
+    public AudioClip somresume; // Resume
+    public AudioClip somsave; // Save
+
     private bool isPaused = false;
 
     void Update()
@@ -24,6 +30,8 @@ public class Pause_Menu : MonoBehaviour
 
     public void ResumeGame()
     {
+        audioSource.PlayOneShot(somresume);
+
         pausePanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
@@ -31,7 +39,16 @@ public class Pause_Menu : MonoBehaviour
 
     public void SaveAndExit()
     {
-        Time.timeScale = 1f; 
+        StartCoroutine(PlaySoundAndExit());
+    }
+
+    private IEnumerator PlaySoundAndExit()
+    {
+        audioSource.PlayOneShot(somsave);
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
 }
