@@ -14,12 +14,15 @@ public class CollectObject : MonoBehaviour
     [Header("Hint Text")]
     public GameObject hintText;
 
+    private bool hasPressedE = false;
+    private bool hasShownHint = false;
     private bool collected = false;
 
     void Start()
     {
-        if (hintText != null)
+        if (hintText != null){
             hintText.SetActive(false);
+        }
     }
 
     void Update()
@@ -29,8 +32,19 @@ public class CollectObject : MonoBehaviour
         bool isNear = IsPlayerNear();
 
         // Mostrar o "E"
-        if (hintText != null)
-            hintText.SetActive(isNear);
+        if (isNear && !hasShownHint)
+        {
+            hasShownHint = true;
+
+            if (hintText != null)
+                hintText.SetActive(true);
+        }
+
+        // Esconder quando se afasta
+        if (!isNear && hintText != null)
+        {
+            hintText.SetActive(false);
+        }
 
         // Apanhar objeto
         if (isNear && Keyboard.current.eKey.wasPressedThisFrame)
