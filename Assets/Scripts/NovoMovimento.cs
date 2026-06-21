@@ -202,6 +202,18 @@ public class NovoMovimento : MonoBehaviour
         externalWindX = windX;
     }
 
+    private bool IsBlocked(Vector2 direction)
+{
+    if (direction == Vector2.zero) return false;
+
+    return Physics2D.Raycast(
+        rb.position,
+        direction.normalized,
+        0.2f,
+        groundLayer | rampLayer
+    );
+}
+
     void Update()
     {
         // (Animations updated later after reading grounded state & inputs)
@@ -423,14 +435,36 @@ public class NovoMovimento : MonoBehaviour
                     // Blend input movement with landing momentum (momentum gradually decays)
                     float momentumBlend = Mathf.Clamp01(landingMomentumDecayTimer / landingMomentumDecayTime);
                     moveVelocity += landingMomentumX * momentumBlend;
-                    rb.linearVelocity = new Vector2(moveVelocity + externalWindX, rb.linearVelocity.y);
+                    float finalX = moveVelocity + externalWindX;
+
+                    Vector2 desired = new Vector2(finalX, 0f);
+
+                    if (!IsBlocked(desired))
+                    {
+                        rb.linearVelocity = new Vector2(finalX, rb.linearVelocity.y);
+                    }
+                    else
+                    {
+                        rb.linearVelocity = new Vector2(moveVelocity, rb.linearVelocity.y);
+                    }
                 }
                 else if (!isChargingDash)
                 {
                     // Maintain momentum while no input
                     float momentumBlend = Mathf.Clamp01(landingMomentumDecayTimer / landingMomentumDecayTime);
                     float momentumVelocity = landingMomentumX * momentumBlend;
-                    rb.linearVelocity = new Vector2(momentumVelocity + externalWindX, rb.linearVelocity.y);
+                    float finalX = momentumVelocity + externalWindX;
+
+                    Vector2 desired = new Vector2(finalX, 0f);
+
+                    if (!IsBlocked(desired))
+                    {
+                        rb.linearVelocity = new Vector2(finalX, rb.linearVelocity.y);
+                    }
+                    else
+                    {
+                        rb.linearVelocity = new Vector2(momentumVelocity, rb.linearVelocity.y);
+                    }
                 }
             }
         }
@@ -561,7 +595,7 @@ public class NovoMovimento : MonoBehaviour
     {
         isMovementEnabled = false;
         // Stop horizontal movement immediately
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y);
     }
     public void ToggleMovement()
     {
