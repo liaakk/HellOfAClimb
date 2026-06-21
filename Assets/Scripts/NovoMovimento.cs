@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -135,6 +136,16 @@ public class NovoMovimento : MonoBehaviour
     private bool isInKnocked = false;
     private bool knockedPlayedOnce = false;
     private float prevYVelocity = 0f;
+
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource walkAudio;
+    [SerializeField] private AudioSource holdAudio;
+    [SerializeField] private AudioSource jumpAudio;
+    [SerializeField] private AudioSource dashHoldAudio;
+
+    private bool wasWalkingLastFrame = false;
+    private bool holdSoundPlayedThisCharge = false;
 
     private void OnEnable()
     {
@@ -339,6 +350,11 @@ public class NovoMovimento : MonoBehaviour
         // Ground: Enable movement
         if (IsSupported)
         {
+            if (dashHoldAudio != null && dashHoldAudio.isPlaying)
+            {
+                dashHoldAudio.Stop();
+            }
+
             if (!isChargingJump && !isStartupDelayActive)
             {
                 ImpulseTimer = initialImpulseTimer;
@@ -533,6 +549,12 @@ public class NovoMovimento : MonoBehaviour
                 dashChargeTimer = 0f;
                 dashChargeDirection = currentMoveInput; // Capture direction at start
                 dashesRemaining--; // Use a dash
+
+                if (dashHoldAudio != null)
+                {
+                    dashHoldAudio.Play();
+                }
+
                 print($"Dash Start - Direction: {dashChargeDirection}, Dashes Left: {dashesRemaining}");
             }
 
@@ -540,7 +562,14 @@ public class NovoMovimento : MonoBehaviour
             if (isChargingDash)
             {
                 dashChargeTimer += Time.deltaTime;
-                
+
+                float percent = Mathf.Clamp01(dashChargeTimer / dashChargeMaxTime);
+
+                if (dashHoldAudio != null)
+                {
+                    dashHoldAudio.pitch = Mathf.Lerp(1f, 2f, percent);
+                }
+
                 // Slow down time while charging
                 if (TImeMaster.Instance != null)
                 {
@@ -569,6 +598,24 @@ public class NovoMovimento : MonoBehaviour
             }
         }
         #endregion
+
+        bool isWalking =
+        IsSupported &&
+        !isChargingJump &&
+        Mathf.Abs(currentMoveInput) > moveDeadZone;
+
+        if (isWalking && !wasWalkingLastFrame)
+        {
+            if (walkAudio != null)
+                walkAudio.Play();
+        }
+        else if (!isWalking && wasWalkingLastFrame)
+        {
+            if (walkAudio != null)
+                walkAudio.Stop();
+        }
+
+        wasWalkingLastFrame = isWalking;
     }
 
     private void FixedUpdate()
@@ -618,7 +665,11 @@ public class NovoMovimento : MonoBehaviour
             print("Jump Pressed!");
             isChargingJump = true; // start charging
             gunkJumpChargeElapsed = 0f;
-            holdPlayedThisCharge = false; // allow hold animation to play once for this charge
+            holdPlayedThisCharge = false;
+            holdSoundPlayedThisCharge = false;
+
+            if (holdAudio != null)
+                holdAudio.Play();
 
             hasJumpedSinceLastGround = true;
 
@@ -648,6 +699,9 @@ public class NovoMovimento : MonoBehaviour
         if (!isChargingJump)
             return;
 
+        if (holdAudio != null && holdAudio.isPlaying)
+        holdAudio.Stop();
+
         isChargingJump = false;
         gunkJumpChargeElapsed = 0f;
         Jump();
@@ -656,6 +710,8 @@ public class NovoMovimento : MonoBehaviour
     void Jump()
     {
         DisableMovement(); // Desativa o movimento horizontal durante o salto
+        if (jumpAudio != null)
+        jumpAudio.Play();
         float chargedTimer = Mathf.Max(0.01f, ImpulseTimer + 1f);
         float jumpForce = ImpulseForce / chargedTimer;
         if (isInGunk)
@@ -673,6 +729,14 @@ public class NovoMovimento : MonoBehaviour
     #region Dash / Mid-Air Boost
     private void ApplyDashBoost()
     {
+        // Stop charge sound and reset pitch
+        if (dashHoldAudio != null)
+        {
+            if (dashFadeCoroutine != null)
+            StopCoroutine(dashFadeCoroutine);
+
+        dashFadeCoroutine = StartCoroutine(FadeOutDashAudio(0.4f));
+        }
         // Calculate boost based on charge time and stored direction
         float chargePercent = Mathf.Clamp01(dashChargeTimer / dashChargeMaxTime);
         float boostVelocity = dashChargeDirection * dashBoostForce * chargePercent;
@@ -963,5 +1027,24 @@ public class NovoMovimento : MonoBehaviour
         {
             moveAction.Disable();
         }
+    }
+
+    private Coroutine dashFadeCoroutine;
+
+    private IEnumerator FadeOutDashAudio(float duration)
+    {
+        float startVolume = dashHoldAudio.volume;
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            dashHoldAudio.volume = Mathf.Lerp(startVolume, 0f, timer / duration);
+            yield return null;
+        }
+
+        dashHoldAudio.Stop();
+        dashHoldAudio.volume = startVolume; // restore for next use
+        dashHoldAudio.pitch = 1f;
     }
 }
