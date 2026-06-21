@@ -54,12 +54,14 @@ public class MusicRegion : MonoBehaviour
 
     public void StartFadeOut()
     {
+        if (!isActiveAndEnabled)
+            return;
+
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
 
         fadeRoutine = StartCoroutine(FadeOut());
     }
-
     private IEnumerator FadeOut()
     {
         float baseVolume = AudioSettings.Instance != null
