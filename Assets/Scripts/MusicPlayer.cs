@@ -10,6 +10,8 @@ public class MusicRegion : MonoBehaviour
     [Header("Fade")]
     [SerializeField] private float fadeOutTime = 1.5f;
 
+    [SerializeField] private float maxVolume = 1f;
+
     private Coroutine fadeRoutine;
 
     private void Awake()
