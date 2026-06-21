@@ -243,7 +243,7 @@ public class NPCDialogue : MonoBehaviour
         {
             lines = new string[]
             {
-                //diálogo glashy
+                //dialogo wtv
             };
         }
         else if (npcName == "Mourchid")
