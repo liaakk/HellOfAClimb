@@ -1,8 +1,14 @@
 using UnityEngine;
+using UnityEngine.Video;
 
 public class CollectButton : MonoBehaviour
 {
+    [Header("Notebook")]
     public NotebookData notebookData;
+
+    [Header("Cutscene")]
+    public VideoClip memoryVideo;
+
     private bool collected = false;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -15,6 +21,15 @@ public class CollectButton : MonoBehaviour
 
             UIButtonsManager.Instance.AddButton();
             Notebook.Instance.UnlockMemory(notebookData);
+
+            if (CutsceneVideoManager.Instance != null && memoryVideo != null)
+            {
+                CutsceneVideoManager.Instance.PlayCutscene(memoryVideo);
+            }
+            else
+            {
+                Debug.LogWarning("CutsceneVideoManager ou memoryVideo em falta!");
+            }
 
             Destroy(gameObject);
         }
