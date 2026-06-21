@@ -246,7 +246,7 @@ public class NPCDialogue : MonoBehaviour
                 //diálogo glashy
             };
         }
-        else if (npcName == "Mourchild")
+        else if (npcName == "Mourchid")
         {
             lines = new string[]
             {
