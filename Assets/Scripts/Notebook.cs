@@ -16,6 +16,13 @@ public class Notebook : MonoBehaviour
     public GameObject objectsPage2;
     public GameObject cutscenesPage;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+
+    public AudioClip openSound;
+    public AudioClip closeSound;
+    public AudioClip pageTurnSound;
+
     [Header("Slots")]
     public NotebookSlot[] npcSlots;
     public NotebookSlot[] objectSlots1;
@@ -59,6 +66,7 @@ public class Notebook : MonoBehaviour
                 if (currentPage < 3)
                 {
                     currentPage++;
+                    audioSource.PlayOneShot(pageTurnSound, 0.4f);
                     UpdatePage();
                 }
                     
@@ -70,18 +78,26 @@ public class Notebook : MonoBehaviour
                 if (currentPage > 0)
                 {
                     currentPage--;
+                    audioSource.PlayOneShot(pageTurnSound, 0.4f);
                     UpdatePage();
                 }
             }
         }
 
         if (Keyboard.current.iKey.wasPressedThisFrame)
-        {
+{
             isOpen = !isOpen;
+
+            if (isOpen)
+                audioSource.PlayOneShot(openSound, 0.5f);
+            else
+                audioSource.PlayOneShot(closeSound, 0.5f);
+
             notebookPanel.SetActive(isOpen);
+
             if (playerMovement != null)
                 playerMovement.enabled = !isOpen;
-        }
+}
     }
 
     // DESBLOQUEAR
