@@ -54,6 +54,9 @@ public class MusicRegion : MonoBehaviour
 
     public void StartFadeOut()
     {
+        Debug.Log($"StartFadeOut on {gameObject.name}, active={gameObject.activeInHierarchy}");
+
+
         if (!isActiveAndEnabled)
             return;
 

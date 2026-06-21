@@ -184,10 +184,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8735380624eb90849856997e7cd3eb7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  player: {fileID: 0}
+  player: {fileID: 615455154328692591, guid: c295478ee6372894580e822d93859dbf, type: 3}
   audioSource: {fileID: 6103565813059451993}
-  maxVolume: 1
-  maxDistance: 5.56
+  maxVolume: 0.2
+  maxDistance: 6
 --- !u!82 &6103565813059451993
 AudioSource:
   m_ObjectHideFlags: 0
