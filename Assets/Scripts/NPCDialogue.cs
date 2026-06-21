@@ -236,7 +236,7 @@ public class NPCDialogue : MonoBehaviour
         {
             lines = new string[]
             {
-                //diálogo shrew
+                //o shrew não fala
             };
         }
         else if (npcName == "Glashy")

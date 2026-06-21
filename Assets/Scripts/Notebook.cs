@@ -12,21 +12,14 @@ public class Notebook : MonoBehaviour
 
     [Header("Pages")]
     public GameObject charactersPage;
-    public GameObject objectsPage;
+    public GameObject objectsPage1;
+    public GameObject objectsPage2;
     public GameObject cutscenesPage;
-
-    [Header("Buttons")]
-    public Image objectsButton;
-    public Image charactersButton;
-    public Image cutscenesButton;
-
-    [Header("Colors")]
-    public Color normalColor = Color.white;
-    public Color selectedColor = Color.gray;
 
     [Header("Slots")]
     public NotebookSlot[] npcSlots;
-    public NotebookSlot[] objectSlots;
+    public NotebookSlot[] objectSlots1;
+    public NotebookSlot[] objectSlots2;
     public NotebookSlot[] memorySlots;
 
     [Header("Player")]
@@ -46,17 +39,14 @@ public class Notebook : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("objectsButton = " + objectsButton);
-        Debug.Log("charactersButton = " + charactersButton);
-        Debug.Log("cutscenesButton = " + cutscenesButton);
-
         notebookPanel.SetActive(false);
 
         ClearSlots(npcSlots);
-        ClearSlots(objectSlots);
+        ClearSlots(objectSlots1);
+        ClearSlots(objectSlots2);
         ClearSlots(memorySlots);
 
-        ShowObjects();
+        ShowObjects1();
     }
 
     void Update()
@@ -66,27 +56,26 @@ public class Notebook : MonoBehaviour
             if (Keyboard.current.rightArrowKey.wasPressedThisFrame ||
                 Keyboard.current.dKey.wasPressedThisFrame)
             {
-                currentPage++;
-
-                if (currentPage > 2)
-                    currentPage = 0;
-
-                UpdatePage();
+                if (currentPage < 3)
+                {
+                    currentPage++;
+                    UpdatePage();
+                }
+                    
             }
 
             if (Keyboard.current.leftArrowKey.wasPressedThisFrame ||
                 Keyboard.current.aKey.wasPressedThisFrame)
             {
-                currentPage--;
-
-                if (currentPage < 0)
-                    currentPage = 2;
-
-                UpdatePage();
+                if (currentPage > 0)
+                {
+                    currentPage--;
+                    UpdatePage();
+                }
             }
         }
 
-        if (Keyboard.current.yKey.wasPressedThisFrame)
+        if (Keyboard.current.iKey.wasPressedThisFrame)
         {
             isOpen = !isOpen;
             notebookPanel.SetActive(isOpen);
@@ -141,12 +130,20 @@ public class Notebook : MonoBehaviour
 
     void RefreshObjects()
     {
-        for(int i = 0; i < objectSlots.Length; i++)
+        for(int i = 0; i < objectSlots1.Length; i++)
         {
             if(i < unlockedObjects.Count)
-                objectSlots[i].SetData(unlockedObjects[i]);
+                objectSlots1[i].SetData(unlockedObjects[i]);
             else
-                objectSlots[i].Clear();
+                objectSlots1[i].Clear();
+        }
+        for(int i = 0; i < objectSlots2.Length; i++)
+        {
+            int objectIndex = i + objectSlots1.Length;
+            if(objectIndex < unlockedObjects.Count)
+                objectSlots2[i].SetData(unlockedObjects[objectIndex]);
+            else
+                objectSlots2[i].Clear();
         }
     }
 
@@ -169,41 +166,36 @@ public class Notebook : MonoBehaviour
 
 
     // BOTÕES
-    public void ShowObjects()
+    public void ShowObjects1()
     {
         currentPage = 0;
-        SetPages(true, false, false);
-        SetButtons(objectsButton);
+        SetPages(true, false, false, false);
+    }
+
+    public void ShowObjects2()
+    {
+        currentPage = 1;
+        SetPages(false, true, false, false);
     }
 
     public void ShowCharacters()
     {
-        currentPage = 1;
-        SetPages(false, true, false);
-        SetButtons(charactersButton);
+        currentPage = 2;
+        SetPages(false, false, true, false);
     }
 
     public void ShowCutscenes()
     {
-        currentPage = 2;
-        SetPages(false, false, true);
-        SetButtons(cutscenesButton);
+        currentPage = 3;
+        SetPages(false, false, false, true);
     }
 
-    void SetPages(bool obj, bool cha, bool cut)
+    void SetPages(bool obj1, bool obj2, bool cha, bool cut)
     {
-        objectsPage.SetActive(obj);
+        objectsPage1.SetActive(obj1);
+        objectsPage2.SetActive(obj2);
         charactersPage.SetActive(cha);
         cutscenesPage.SetActive(cut);
-    }
-
-    void SetButtons(Image activeButton)
-    {
-        objectsButton.color = normalColor;
-        charactersButton.color = normalColor;
-        cutscenesButton.color = normalColor;
-
-        activeButton.color = selectedColor;
     }
 
     void UpdatePage()
@@ -211,14 +203,18 @@ public class Notebook : MonoBehaviour
         switch (currentPage)
         {
             case 0:
-                ShowObjects();
+                ShowObjects1();
                 break;
 
             case 1:
-                ShowCharacters();
+                ShowObjects2();
                 break;
 
             case 2:
+                ShowCharacters();
+                break;
+
+            case 3:
                 ShowCutscenes();
                 break;
         }
