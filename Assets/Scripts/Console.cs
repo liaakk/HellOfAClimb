@@ -186,6 +186,7 @@ public class DeveloperConsole : MonoBehaviour
         commands.Add("dev3.2", args => TeleportPlayer(new Vector2(-10f, 192f), "dev3.2"));
         commands.Add("dev3.4", args => TeleportPlayer(new Vector2(0f, 220f), "dev3.4"));
         commands.Add("dev3.6", args => TeleportPlayer(new Vector2(-4.5f, 248f), "dev3.6"));
+        commands.Add("dev3.7", args => TeleportPlayer(new Vector2(10f, 270f), "dev3.7"));
         commands.Add("dev3.8", args => TeleportPlayer(new Vector2(-7f, 271f), "dev3.8"));
         commands.Add("dev4", args => TeleportPlayer(new Vector2(2.2f, 297f), "dev4"));
         commands.Add("dev4.0", args => TeleportPlayer(new Vector2(2.2f, 297f), "dev4.0"));
