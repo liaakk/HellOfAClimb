@@ -111,7 +111,7 @@ public class CutsceneVideoManager : MonoBehaviour
         if (videoImage != null)
             videoImage.enabled = false;
 
-        // Fecha instantaneamente, como pediste
+        // Fecha instantaneamente
         if (cutscenePanel != null)
             cutscenePanel.SetActive(false);
 
