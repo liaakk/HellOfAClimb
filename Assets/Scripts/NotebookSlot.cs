@@ -12,19 +12,36 @@ public class NotebookSlot : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        entryImage.sprite = data.image;
-        entryName.text = data.entryName;
-        entryDescription.text = data.description;
+        if (entryImage != null)
+        {
+            entryImage.sprite = data.image;
+            entryImage.enabled = true;
+        }
 
-        entryImage.enabled = true;
-        entryName.enabled = true;
-        entryDescription.enabled = true;
+        if (entryName != null)
+        {
+            entryName.text = data.entryName;
+            entryName.enabled = true;
+        }
+
+        if (entryDescription != null)
+        {
+            entryDescription.text = data.description;
+            entryDescription.enabled = true;
+        }
     }
 
     public void Clear()
     {
-        entryImage.enabled = false;
-        entryName.enabled = false;
-        entryDescription.enabled = false;
+         if (entryImage != null)
+        {
+            entryImage.enabled = false;
+        }
+
+        if (entryName != null)
+            entryName.enabled = false;
+
+        if (entryDescription != null)
+            entryDescription.enabled = false;
     }
 }
