@@ -44,6 +44,6 @@ public class Door : MonoBehaviour
 
         // colocar aqui dps um fade out ou algo do tipo
          
-        SceneManager.LoadScene(sceneToLoad);
+        SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
     }
 }

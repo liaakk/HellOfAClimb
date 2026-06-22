@@ -37,12 +37,12 @@ public class Final : MonoBehaviour
     void Loop() 
     {
         print("LoopEnding");
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 
     void Ending() 
     {
         print("Ending");
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 }
