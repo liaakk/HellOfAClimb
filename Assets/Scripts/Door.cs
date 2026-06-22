@@ -42,7 +42,7 @@ public class Door : MonoBehaviour
             yield return null;
         }
 
-        // colocar aqui dps um fade out ou algo do tipo
+       
          
         SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
     }
