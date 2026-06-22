@@ -49,6 +49,6 @@ public class Pause_Menu : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.5f);
 
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 }
